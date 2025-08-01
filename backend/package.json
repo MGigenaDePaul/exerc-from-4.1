@@ -1,0 +1,27 @@
+{
+  "name": "from_4.1",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/MGigenaDePaul/exerc-from-4.1#readme",
+  "bugs": {
+    "url": "https://github.com/MGigenaDePaul/exerc-from-4.1/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MGigenaDePaul/exerc-from-4.1.git"
+  },
+  "license": "MIT",
+  "author": "Miqueas Gigena",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "mongoose": "^8.17.0"
+  }
+}
