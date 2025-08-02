@@ -7,4 +7,16 @@ const totalLikes = (blogs) => {
   return blogs.reduce((accumulator, currentValue) => accumulator + currentValue.likes, initialValue)
 }
 
-module.exports = { dummy, totalLikes }
+const favoriteBlog = (blogs) => {
+  let maxLikes = blogs[0].likes
+  let favoriteIndex = 0
+  for (let i = 1; i < blogs.length; i++){
+    if (blogs[i].likes > maxLikes) {
+        maxLikes = blogs[i].likes
+        favoriteIndex = i  // index of the favoriteBlog
+    }
+  }
+  return blogs[favoriteIndex]
+}
+
+module.exports = { dummy, totalLikes, favoriteBlog }
