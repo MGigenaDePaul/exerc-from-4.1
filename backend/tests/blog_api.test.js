@@ -25,13 +25,21 @@ test('all blogs are returned', async () => {
   assert.strictEqual(response.body.length, helper.initialBlogs.length)
 })
 
+test('verifies that the unique identifier property of the blog posts is named id', async () => {
+
+  const response = await api.get('/api/blogs')
+
+  response.body.forEach(blog => {
+    assert(Object.hasOwn(blog, 'id'))
+  })
+})
+
 test('a valid blog can be added', async () => {
   const newBlog = {
     title: 'NEW BLOG',
     author: 'Reacon',
     url: 'https://lslslslsls',
     likes: 4,
-    __v: 0
   }
 
   await api
@@ -42,6 +50,9 @@ test('a valid blog can be added', async () => {
 
   const blogsAtEnd = await helper.blogsInDb()
   assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length + 1)
+
+  const contents = blogsAtEnd.map((blog) => blog.title)
+  assert(contents.includes('NEW BLOG'))
 })
 
 after(async () => {

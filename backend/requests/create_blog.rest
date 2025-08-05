@@ -2,8 +2,8 @@ POST http://localhost:3003/api/blogs
 Content-Type: application/json 
 
 {
-    "title": "Good food is good", 
-    "author": "Rita",
+    "title": "Read tons of pages", 
+    "author": "Maccafrey",
     "url": "https://................",
     "likes": 10
 }
