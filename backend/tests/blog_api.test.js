@@ -26,7 +26,6 @@ test('all blogs are returned', async () => {
 })
 
 test('verifies that the unique identifier property of the blog posts is named id', async () => {
-
   const response = await api.get('/api/blogs')
 
   response.body.forEach(blog => {
@@ -53,6 +52,16 @@ test('a valid blog can be added', async () => {
 
   const contents = blogsAtEnd.map((blog) => blog.title)
   assert(contents.includes('NEW BLOG'))
+})
+
+test('if the likes property is missing from the request, it will default to the value 0', async () => {
+  const response = await api.get('/api/blogs')
+
+  response.body.forEach((blog) => {
+    if (!Object.hasOwn(blog, 'likes')) {
+      assert.strictEqual(blog.likes, 0)
+    }
+  })
 })
 
 after(async () => {

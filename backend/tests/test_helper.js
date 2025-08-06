@@ -29,7 +29,11 @@ const initialBlogs = [
     title: 'SOO',
     author: 'PASHA',
     url: 'msneaiisll',
-    likes: 3
+  },
+  {
+    title: 'Salvador',
+    author: 'Richard',
+    url: 'https://....',
   },
 ]
 
