@@ -24,4 +24,18 @@ blogsRouter.delete('/:id', async (request, response) => {
 install the express-async-errors library, express 5 does all the error hanlder work under the hood
 */
 
+blogsRouter.put('/:id', async (request, response) => {
+  const { likes } = request.body
+
+  const blog = await Blog.findById(request.params.id)
+  if (!blog) {
+    return response.status(404).end()
+  }
+
+  blog.likes = likes
+
+  const savedBlog = await blog.save()
+  response.status(200).json(savedBlog)
+})
+
 module.exports = blogsRouter
