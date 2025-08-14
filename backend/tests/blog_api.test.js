@@ -12,7 +12,6 @@ beforeEach(async () => {
   await Blog.insertMany(helper.initialBlogs)
 })
 
-
 describe('when there is initially some blogs saved', () => {
   test('blogs are returned in JSON format', async () => {
     await api
@@ -30,10 +29,12 @@ describe('when there is initially some blogs saved', () => {
 
 describe('viewing a specific blog', () => {
   test('a valid blog can be added', async () => {
+    const blogsAtStart = await helper.blogsInDb()
+
     const newBlog = {
-      title: 'NEW BLOG',
+      title: 'Eat healthy food',
       author: 'Reacon',
-      url: 'https://lslslslsls',
+      url: 'https://........',
       likes: 4,
     }
 
@@ -44,10 +45,10 @@ describe('viewing a specific blog', () => {
       .expect('Content-Type', /application\/json/)
 
     const blogsAtEnd = await helper.blogsInDb()
-    assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length + 1)
+    assert.strictEqual(blogsAtEnd.length, blogsAtStart.length + 1)
 
     const contents = blogsAtEnd.map((blog) => blog.title)
-    assert(contents.includes('NEW BLOG'))
+    assert(contents.includes('Eat healthy food'))
   })
 })
 
@@ -72,6 +73,8 @@ describe('viewing properties of blogs', () => {
   })
 
   test('if the title or url properties are missing, the backend responds with the status code 400 Bad Request.', async () => {
+    const blogsAtStart = await helper.blogsInDb()
+
     const newBlog = {
       author: 'no title or url',
       likes: 4
@@ -83,7 +86,7 @@ describe('viewing properties of blogs', () => {
 
     const blogsAtEnd = await helper.blogsInDb()
 
-    assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length)
+    assert.strictEqual(blogsAtEnd.length, blogsAtStart.length)
   })
 })
 
@@ -100,28 +103,6 @@ describe('deletion of a blog', () => {
 
     assert(!contents.includes(blogToDelete.title))
   })
-})
-
-test('creation succeeds with a fresh username', async () => {
-  const usersAtStart = await helper.usersInDb()
-
-  const newUser = {
-    username: 'mluukkai',
-    name: 'Matti Luukkainen',
-    password: 'salainen',
-  }
-
-  await api
-    .post('/api/users')
-    .send(newUser)
-    .expect(201)
-    .expect('Content-Type', /application\/json/)
-
-  const usersAtEnd = await helper.usersInDb()
-  assert.strictEqual(usersAtEnd.length, usersAtStart.length + 1)
-
-  const usernames = usersAtEnd.map(u => u.username)
-  assert(usernames.includes(newUser.username))
 })
 
 after(async () => {

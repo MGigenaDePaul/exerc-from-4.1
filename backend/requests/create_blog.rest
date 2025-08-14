@@ -2,8 +2,8 @@ POST http://localhost:3003/api/blogs
 Content-Type: application/json 
 
 {
-    "title": "Minecraft",
-    "author": "Luther",
+    "title": "How to center a div",
+    "author": "Mluukai",
     "url": "https://................",
-    "likes": 167
+    "likes": 17
 }
