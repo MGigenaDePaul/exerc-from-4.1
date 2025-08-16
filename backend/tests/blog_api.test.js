@@ -29,13 +29,11 @@ describe('when there is initially some blogs saved', () => {
 
 describe('viewing a specific blog', () => {
   test('a valid blog can be added', async () => {
-    const blogsAtStart = await helper.blogsInDb()
-
     const newBlog = {
-      title: 'Eat healthy food',
+      title: 'NEW BLOG',
       author: 'Reacon',
       url: 'https://........',
-      likes: 4,
+      likes: 4
     }
 
     await api
@@ -45,10 +43,10 @@ describe('viewing a specific blog', () => {
       .expect('Content-Type', /application\/json/)
 
     const blogsAtEnd = await helper.blogsInDb()
-    assert.strictEqual(blogsAtEnd.length, blogsAtStart.length + 1)
+    assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length + 1)
 
     const contents = blogsAtEnd.map((blog) => blog.title)
-    assert(contents.includes('Eat healthy food'))
+    assert(contents.includes('NEW BLOG'))
   })
 })
 

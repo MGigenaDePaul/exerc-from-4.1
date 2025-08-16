@@ -2,8 +2,9 @@ POST http://localhost:3003/api/blogs
 Content-Type: application/json 
 
 {
-    "title": "How to center a div",
-    "author": "Mluukai",
+    "title": "Advance in small steps",
+    "author": "Chefi",
     "url": "https://................",
-    "likes": 17
+    "likes": 19,
+    "userId": "68a0cc4ba22b3f8c084430c6"
 }

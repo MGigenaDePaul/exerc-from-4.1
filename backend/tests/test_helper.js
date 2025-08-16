@@ -26,16 +26,6 @@ const initialBlogs = [
     url: '92kdkdkdlsll',
     likes: 1
   },
-  {
-    title: 'SOO',
-    author: 'PASHA',
-    url: 'msneaiisll',
-  },
-  {
-    title: 'Salvador',
-    author: 'Richard',
-    url: 'https://....',
-  },
 ]
 
 const blogsInDb = async () => {
