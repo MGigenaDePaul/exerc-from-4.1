@@ -2,9 +2,9 @@ POST http://localhost:3003/api/blogs
 Content-Type: application/json 
 
 {
-    "title": "Advance in small steps",
-    "author": "Chefi",
+    "title": "Roblox Player",
+    "author": "Daniel",
     "url": "https://................",
-    "likes": 19,
-    "userId": "68a0cc4ba22b3f8c084430c6"
+    "likes": 7,
+    "userId": "689cb6edb3b80b55158a908e"
 }
