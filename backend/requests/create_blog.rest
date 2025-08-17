@@ -1,10 +1,10 @@
 POST http://localhost:3003/api/blogs
 Content-Type: application/json 
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkNoZWZpIiwiaWQiOiI2OGEyMDg4NzY5OWM4ODdiNmE3OWM3OGQiLCJpYXQiOjE3NTU0NTE4MTR9.q5hPJgVPsoHx8mbuTj1OoS3hbHu9AhBzmudeMD7EJLE
 
 {
-    "title": "Roblox Player",
-    "author": "Daniel",
-    "url": "https://................",
-    "likes": 7,
-    "userId": "689cb6edb3b80b55158a908e"
+    "title": "What Restaurant Chains Are Closing Locations, And Why?",
+    "author": "Augurian",
+    "url": "https://integratedcashlogistics.com/restaurant-chains-closing-locations/",
+    "likes": 80
 }
