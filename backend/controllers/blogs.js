@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken')
 const blogsRouter = require('express').Router()
+const logger = require('../utils/logger')
 const Blog = require('../models/blog')
 const User = require('../models/user')
 
@@ -41,11 +42,19 @@ blogsRouter.post('/', async (request, response) => {
 })
 
 blogsRouter.delete('/:id', async (request, response) => {
-  await Blog.findByIdAndDelete(request.params.id)
-  response.status(204).end()
-}) /*because we have express@5.1.0 we do not need to
-install the express-async-errors library, express 5 does all the error hanlder work under the hood
-*/
+  const decodedToken = jwt.verify(request.token, process.env.SECRET)
+  if (!decodedToken.id) {
+    return response.status(401).json({ error: 'token invalid' })
+  }
+  const blog = await Blog.findByIdAndDelete(request.params.id)
+  const user = await User.findById(decodedToken.id)
+  logger.info(blog.user.toString())
+  logger.info(user._id.toString())
+
+  if ( blog.user.toString() === user._id.toString() ) {
+    response.status(204).end()
+  }
+})
 
 blogsRouter.put('/:id', async (request, response) => {
   const { likes } = request.body
