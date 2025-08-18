@@ -19,10 +19,9 @@ mongoose.connect(config.MONGODB_URI)
   })
 
 app.use(express.json())
-
 app.use(middleware.tokenExtractor)
 app.use('/api/login', loginRouter)
-app.use('/api/blogs', blogsRouter)
+app.use('/api/blogs', blogsRouter) // didn't include userExtractor middleware because of the GET request, used it individually in each route
 app.use('/api/users', usersRouter)
 
 app.use(middleware.errorHandler)

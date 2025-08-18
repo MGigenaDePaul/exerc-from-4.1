@@ -1,6 +1,6 @@
 POST http://localhost:3003/api/blogs
 Content-Type: application/json 
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1henp1Y28iLCJpZCI6IjY4YTIyNWU3YjVkNmRlMDYxN2M1NDllMSIsImlhdCI6MTc1NTQ2ODA5Mn0.tyqLsfw1ZHKznyQaEEcBFXOYlYWLM_vt3TCsIZC40ms
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1henp1Y28iLCJpZCI6IjY4YTIyNWU3YjVkNmRlMDYxN2M1NDllMSIsImlhdCI6MTc1NTUzMTM3OH0.xTawPuvXQ3ZjYR2D_3Yh0LaHReXisuQM_jnFS9Q5pE0
 
 {
     "title": "Cristiano Ronaldo",
