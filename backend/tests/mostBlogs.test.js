@@ -1,7 +1,6 @@
 const { test, describe } = require('node:test')
 const assert = require('node:assert')
-const _ = require('lodash')
-
+const listHelper = require('../utils/list_helper')
 describe('returns the author who has the larger amount of blogs', () => {
   const blogs = [
     {
@@ -25,7 +24,7 @@ describe('returns the author who has the larger amount of blogs', () => {
       title: 'Canonical string reduction',
       author: 'Edsger W. Dijkstra',
       url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
-      likes: 12,
+      likes: 17,
       __v: 0
     },
     {
@@ -55,16 +54,8 @@ describe('returns the author who has the larger amount of blogs', () => {
   ]
 
   test('returns author with most blogs', () => {
-    const grouped = _.groupBy(blogs, 'author')
-
-    const counts = _.map(grouped, (authorBlogs, author) => ({
-      author,
-      blogs: authorBlogs.length
-    }))
-
-    const authorMostBlogs = _.maxBy(counts, 'blogs')
-
-    assert.deepStrictEqual(authorMostBlogs, { author: 'Robert C. Martin', blogs: 3 })
+    const result = listHelper.mostBlogs(blogs)
+    assert.deepStrictEqual(result, { author: 'Robert C. Martin', blogs: 3 })
   })
 })
 
