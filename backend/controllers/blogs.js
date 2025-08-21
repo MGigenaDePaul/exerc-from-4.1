@@ -1,8 +1,6 @@
 const blogsRouter = require('express').Router()
-const logger = require('../utils/logger')
 const { userExtractor } = require('../utils/middleware')
 const Blog = require('../models/blog')
-
 
 blogsRouter.get('/', async (request, response) => {
   const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 })
@@ -45,9 +43,6 @@ blogsRouter.delete('/:id', userExtractor, async (request, response) => {
   if (!user) {
     return response.status(400).json({ error: 'userId is missing or not valid' })
   }
-
-  logger.info(blog.user.toString())
-  logger.info(user._id.toString())
 
   if ( blog.user.toString() === user._id.toString() ) {
     response.status(204).end()

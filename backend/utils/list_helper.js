@@ -59,7 +59,6 @@ const mostBlogs = (blogs) => {
 // mostBlogs with LODASH (test passes and it works if we add more blogs)
 const mostBlogsVersion2 = (blogs) => {
   const groupBlogs = _.groupBy(blogs, 'author')
-  console.log(groupBlogs)
   const counts = _.map(groupBlogs, (authorBlogs, author) => ({
     author,
     blogs: authorBlogs.length

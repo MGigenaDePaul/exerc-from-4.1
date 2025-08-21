@@ -20,6 +20,7 @@ beforeEach(async () => {
   const passwordHash = await bcrypt.hash('do it', saltRounds) // 'do it' ---> plain password
 
   const user = new User({
+    name: 'Juan',
     username: 'Pablo',
     passwordHash
   })
@@ -33,11 +34,10 @@ beforeEach(async () => {
 
   authToken = jwt.sign(userForToken, process.env.SECRET, { expiresIn: 60*60 })
 
-  await Blog.insertMany(helper.initialBlogs)
+  await Blog.insertMany(helper.initialBlogs.map(blog => ( { ...blog, user: userForToken.id })))
 })
 
-
-
+// USERS
 describe('related to users', () => {
   test('creation succeeds with a fresh username', async () => {
     const usersAtStart = await helper.usersInDb()
@@ -72,12 +72,75 @@ describe('related to users', () => {
     await api.post('/api/users')
       .send(newUser)
       .expect(400)
+      .expect('Content-Type', /application\/json/)
 
     const usersAtEnd = await helper.usersInDb()
     assert.strictEqual(usersAtEnd.length, usersAtStart.length)
   })
+
+  test('if username length is less than 3, user is not added', async () => {
+    const usersAtStart = await helper.usersInDb()
+
+    const newUser = {
+      username: 'r',
+      name: 'Richard',
+      password: 'comeon'
+    }
+
+    await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    const usersAtEnd = await helper.usersInDb()
+
+    assert.strictEqual(usersAtEnd.length, usersAtStart.length)
+  })
+
+  test('user is not added if username already exists', async() => {
+    const usersAtStart = await helper.usersInDb()
+
+    const newUser = {
+      username: 'Pablo',
+      name: 'Senior',
+      password: 'house'
+    }
+
+    await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    const usersAtEnd = await helper.usersInDb()
+
+    assert.strictEqual(usersAtEnd.length, usersAtStart.length)
+  })
+
+  test('user can not be added if password is missing', async() => {
+    const usersAtStart = await helper.usersInDb()
+
+    const newUser = {
+      username: 'Rachael',
+      name: 'Maria'
+    }
+
+    await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    const usersAtEnd = await helper.usersInDb()
+
+    assert.strictEqual(usersAtEnd.length, usersAtStart.length)
+  })
 })
 
+// -----------------------------------------------------------------------
+
+// BLOGS
 describe('when there is initially some blogs saved', () => {
   test('blogs are returned in JSON format', async () => {
     await api
@@ -128,6 +191,7 @@ describe('viewing a specific blog', () => {
       .post('/api/blogs')
       .send(newBlog)
       .expect(401)
+      .expect('Content-Type', /application\/json/)
 
     const blogsAtEnd = await helper.blogsInDb()
     assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length)
@@ -167,6 +231,7 @@ describe('viewing properties of blogs', () => {
       .send(newBlog)
       .set('Authorization', 'Bearer ' + authToken)
       .expect(400)
+      .expect('Content-Type', /application\/json/)
 
     const blogsAtEnd = await helper.blogsInDb()
 
