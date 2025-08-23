@@ -14,11 +14,11 @@ npm install
 
 #### Steps for running the blogs Database
 
-1. cd from_4.1/backend 
+1. cd from_4.1/part4/backend 
 2. npm run dev
 
 #### Steps for running the test Database
-1. cd from_4.1/backend
+1. cd from_4.1/part4/backend
 2. npm test
 
 
