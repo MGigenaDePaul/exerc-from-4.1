@@ -1,20 +1,22 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import Notification from './components/Notification'
 import loginService from './services/login' 
 import './index.css' 
+import LoginForm from './components/LoginForm'
+import Togglable from './components/Togglable'
+import BlogForm from './components/BlogForm'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [newTitle, setNewTitle] = useState('')
-  const [newAuthor, setNewAuthor] = useState('')
-  const [newUrl, setNewUrl] = useState('')
   const [message, setMessage] = useState(null)
   
+  const blogFormRef = useRef()
+
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs(blogs)
@@ -29,6 +31,18 @@ const App = () => {
       blogService.setToken(user.token)
     }
   }, [])
+
+
+   const addBlog = (blogObject) => {
+    blogFormRef.current.toggleVisibility()
+    blogService.create(blogObject).then(createdBlog => {
+      setBlogs(blogs.concat(createdBlog))
+      setMessage(`a new blog ${blogObject.title} by ${blogObject.author} added`)
+      setTimeout(() => {
+        setMessage(null)
+      }, 5000)
+    })
+  }
 
   const handleLogin = async event => {
     event.preventDefault()
@@ -66,48 +80,20 @@ const App = () => {
     if (user === null) {
     return (
       <div>
-        <h2>Log in to application</h2>
-        <Notification message={message} />
-        <form onSubmit={handleLogin}>
-          <div>
-            <label>
-              username
-              <input type="text" value={username} onChange={({ target }) => setUsername(target.value)}/>
-            </label>
-          </div>
-          <div>
-            <label>
-              password
-              <input type="text" value={password} onChange={({target}) => setPassword(target.value)}/>
-            </label>
-          </div>
-          <button type="submit">login</button>
-        </form>
+          <Notification message={message}/>
+          <Togglable buttonLabel="login">
+            <LoginForm 
+              username={username}
+              password={password}
+              handleUsernameChange={({target}) => setUsername(target.value)}
+              handlePasswordChange={({target}) => setPassword(target.value)}
+              handleSubmit={handleLogin}
+            />
+          </Togglable>
       </div>
     )
   }
 }
-
-  const addBlog = event => {
-    event.preventDefault()
-
-    const blogObject = {
-      title: newTitle, 
-      author: newAuthor,
-      url: newUrl,
-    }
-
-    blogService.create(blogObject).then(createdBlog => {
-      setBlogs(blogs.concat(createdBlog))
-      setNewTitle('')
-      setNewAuthor('')
-      setNewUrl('')
-      setMessage(`a new blog ${blogObject.title} by ${blogObject.author} added`)
-      setTimeout(() => {
-        setMessage(null)
-      }, 5000)
-    })
-  }
 
   return (
     <div> 
@@ -122,16 +108,9 @@ const App = () => {
                 <button style={{display: 'inline-flex'}} onClick={() => handleLogOut()}>logout</button>
               </div>
             )}
-            <h2>create new</h2>
-            <form onSubmit={addBlog}>
-              title: <input type="text" value={newTitle} onChange={(event) => setNewTitle(event.target.value)} />
-              <br/>
-              author: <input type="text" value={newAuthor} onChange={(event) => setNewAuthor(event.target.value)} />
-              <br/>
-              url: <input type="text" value={newUrl} onChange={(event) => setNewUrl(event.target.value)} />
-              <br/>
-              <button type="submit">create</button>
-            </form>          
+            <Togglable buttonLabel="new blog" ref={blogFormRef}>
+              <BlogForm createBlog={addBlog} />  
+            </Togglable> 
             {blogs.map(blog =>
               <Blog key={blog.id} blog={blog} />)}
           </div>
