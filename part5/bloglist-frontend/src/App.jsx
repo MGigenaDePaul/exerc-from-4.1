@@ -33,7 +33,7 @@ const App = () => {
   }, [])
 
 
-   const addBlog = (blogObject) => {
+  const addBlog = (blogObject) => {
     blogFormRef.current.toggleVisibility()
     blogService.create(blogObject).then(createdBlog => {
       setBlogs(blogs.concat(createdBlog))
@@ -41,6 +41,15 @@ const App = () => {
       setTimeout(() => {
         setMessage(null)
       }, 5000)
+    })
+  }
+
+  const handleLikeUpdate = (blog, id) => {
+    const findBlog = blogs.find(blog => blog.id === id)
+    const changedBlog = {...blog, likes: findBlog.likes + 1}
+
+    blogService.update(blog.id, changedBlog).then(returnedBlog => {
+      setBlogs(blogs.map(blog => blog.id === id ? returnedBlog : blog))
     })
   }
 
@@ -112,7 +121,7 @@ const App = () => {
               <BlogForm createBlog={addBlog} />  
             </Togglable> 
             {blogs.map(blog =>
-              <Blog key={blog.id} blog={blog} />)}
+              <Blog key={blog.id} blog={blog} handleLikeUpdate={handleLikeUpdate}/>)}
           </div>
         )}
     </div>
