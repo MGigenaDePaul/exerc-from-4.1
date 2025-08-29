@@ -46,8 +46,10 @@ const App = () => {
 
   const handleLikeUpdate = (blog, id) => {
     const findBlog = blogs.find(blog => blog.id === id)
-    const changedBlog = {...blog, likes: findBlog.likes + 1}
-
+    const changedBlog = {...findBlog, user: findBlog.user.id, likes: findBlog.likes + 1}
+    console.log('blog', findBlog)
+    console.log('changed Blog: ', changedBlog)
+  
     blogService.update(blog.id, changedBlog).then(returnedBlog => {
       setBlogs(blogs.map(blog => blog.id === id ? returnedBlog : blog))
     })
@@ -120,8 +122,9 @@ const App = () => {
             <Togglable buttonLabel="new blog" ref={blogFormRef}>
               <BlogForm createBlog={addBlog} />  
             </Togglable> 
-            {blogs.map(blog =>
-              <Blog key={blog.id} blog={blog} handleLikeUpdate={handleLikeUpdate}/>)}
+            {[...blogs].sort((a,b) => (a.likes) - (b.likes)).map(blog =>
+                  <Blog key={blog.id} blog={blog} handleLikeUpdate={handleLikeUpdate} />)
+            }
           </div>
         )}
     </div>
