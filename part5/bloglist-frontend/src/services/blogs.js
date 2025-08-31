@@ -39,9 +39,9 @@ const eliminate = async id => {
   return response.data
 }
 
-export default { 
-  getAll, 
-  setToken, 
+export default {
+  getAll,
+  setToken,
   create,
   update,
   eliminate
