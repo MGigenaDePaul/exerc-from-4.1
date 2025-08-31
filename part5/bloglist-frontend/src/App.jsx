@@ -47,12 +47,28 @@ const App = () => {
   const handleLikeUpdate = (blog, id) => {
     const findBlog = blogs.find(blog => blog.id === id)
     const changedBlog = {...findBlog, user: findBlog.user.id, likes: findBlog.likes + 1}
-    console.log('blog', findBlog)
-    console.log('changed Blog: ', changedBlog)
   
-    blogService.update(blog.id, changedBlog).then(returnedBlog => {
-      setBlogs(blogs.map(blog => blog.id === id ? returnedBlog : blog))
-    })
+    blogService.update(blog.id, changedBlog)
+      .then(returnedBlog => {
+        setBlogs(blogs.map(blog => blog.id === id ? returnedBlog : blog))
+      })
+      .catch(() => {
+        console.log('could not update likes')
+      })
+  }
+
+  const handleBlogDelete = (id) => {
+    const blog = blogs.find(blog => blog.id === id)
+    const ok = window.confirm(`Do you want to remove blog ${blog.title} by ${blog.author}`)
+    if (ok) {
+      blogService.eliminate(id)
+        .then(() => {
+          setBlogs(blogs.filter(blog => blog.id !== id))
+        })
+        .catch(() => {
+          console.log('could not delete blog')
+        })
+    }
   }
 
   const handleLogin = async event => {
@@ -123,7 +139,7 @@ const App = () => {
               <BlogForm createBlog={addBlog} />  
             </Togglable> 
             {[...blogs].sort((a,b) => (a.likes) - (b.likes)).map(blog =>
-                  <Blog key={blog.id} blog={blog} handleLikeUpdate={handleLikeUpdate} />)
+                  <Blog key={blog.id} blog={blog} handleLikeUpdate={handleLikeUpdate} handleBlogDelete={handleBlogDelete}/>)
             }
           </div>
         )}
