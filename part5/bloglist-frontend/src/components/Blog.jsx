@@ -15,7 +15,7 @@ const Blog = ({ blog, handleLikeUpdate, handleBlogDelete }) => {
   return (
     <div style={blogStyle}>
       <div>
-        <div style={{ display: 'inline-flex' }}>
+        <div className='blog' style={{ display: 'inline-flex' }}>
           {blog.title} {blog.author}
           <button onClick={() => setViewBlog(v => !v)}>
             {viewBlog ? 'hide' : 'view'}
