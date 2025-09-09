@@ -5,6 +5,6 @@ const Notification = ({ message }) => {
 
   const className = message.includes('new') ? 'message success' : 'message error'
   return <div className={className}> {message} </div>
-}
+}   
 
 export default Notification
