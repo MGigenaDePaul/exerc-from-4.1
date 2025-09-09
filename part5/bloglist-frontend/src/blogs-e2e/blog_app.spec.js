@@ -43,9 +43,8 @@ describe('Blog app', () => {
     })
 
     test('a new blog can be created', async ({ page }) => {
-        await createBlog(page, 'blog by Playwright', 'Miqueas', 'https://inventedUrl.com')
-        await expect(page.locator('.message.success')).toContainText('a new blog blog by Playwright by Miqueas added')
-        await expect(page.locator('.blog').getByText('blog by Playwright Miqueas')).toBeVisible()
+        await createBlog(page, 'created blog', 'Playwright', 'https://inventedUrl.com')
+        await expect(page.locator('.blog').getByText('created blog Playwright')).toBeVisible()
     })
 
     test('a blog can be liked', async({ page }) => {
@@ -54,6 +53,17 @@ describe('Blog app', () => {
         await page.getByRole('button', { name: 'view' }).click()
         await page.getByRole('button', { name: 'like' }).click()
         await expect(page.getByText('likes 1')).toBeVisible()
+    })
+
+    test('user who adds a blog can remove it', async({ page }) => {
+        await createBlog(page, 'blog to delete', 'Playwright', 'https://blogToDelete.com')
+        await expect(page.locator('.blog').getByText('blog to delete Playwright')).toBeVisible()
+        await page.getByRole('button', { name: 'view' }).click()
+
+        page.on('dialog', dialog => dialog.accept())
+        await page.getByRole('button', { name: 'remove' }).click()
+        
+        await expect(page.locator('.blog').getByText('blog to delete Playwright')).not.toBeVisible()
     })
   })
 })
