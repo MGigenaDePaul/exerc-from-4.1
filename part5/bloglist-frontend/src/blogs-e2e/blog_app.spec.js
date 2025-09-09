@@ -1,5 +1,5 @@
 import { test, describe, expect, beforeEach } from '@playwright/test'
-import { loginWith } from './helper'
+import { loginWith, createBlog } from './helper'
 
 describe('Blog app', () => {
   beforeEach(async ({ page, request }) => {
@@ -16,7 +16,7 @@ describe('Blog app', () => {
   })
 
   test('Login form is shown', async ({ page }) => {
-    await loginWith(page, 'Basquez', '5225')
+    await loginWith(page, 'Lopez', '4224')
   })
 
   describe('Login', () => {
@@ -26,7 +26,7 @@ describe('Blog app', () => {
     })
 
     test('fails with wrong credentials', async ({ page }) => {
-        await loginWith(page, 'Raul', '59083')
+        await loginWith(page, 'Basquez', 'wrong')
 
         const errorDiv = page.locator('.message.error')
         await expect(errorDiv).toContainText('Wrong credentials')
@@ -34,6 +34,18 @@ describe('Blog app', () => {
         await expect(errorDiv).toHaveCSS('color', 'rgb(255, 0, 0)')
 
         await expect(page.getByText('Julio logged in')).not.toBeVisible()
+    })
+  }) 
+
+  describe('when logged in', () => {
+    beforeEach(async ({ page }) => {
+      await loginWith(page, 'Basquez', '5225')
+    })
+
+    test('a new blog can be created', async ({ page }) => {
+        await createBlog(page, 'blog by Playwright', 'Miqueas', 'https://inventedUrl.com')
+        await expect(page.locator('.message.success')).toContainText('a new blog blog by Playwright by Miqueas added')
+        await expect(page.locator('.blog').getByText('blog by Playwright Miqueas')).toBeVisible()
     })
   })
 })
