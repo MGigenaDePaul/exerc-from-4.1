@@ -47,5 +47,13 @@ describe('Blog app', () => {
         await expect(page.locator('.message.success')).toContainText('a new blog blog by Playwright by Miqueas added')
         await expect(page.locator('.blog').getByText('blog by Playwright Miqueas')).toBeVisible()
     })
+
+    test('a blog can be liked', async({ page }) => {
+        await createBlog(page, 'Love and Lemons', 'Ramirez', 'https://www.loveandlemons.com/' )
+        await expect(page.locator('.blog').getByText('Love and Lemons Ramirez')).toBeVisible()
+        await page.getByRole('button', { name: 'view' }).click()
+        await page.getByRole('button', { name: 'like' }).click()
+        await expect(page.getByText('likes 1')).toBeVisible()
+    })
   })
 })
