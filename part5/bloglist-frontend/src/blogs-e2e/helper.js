@@ -1,3 +1,5 @@
+import {expect} from '@playwright/test'
+
 const loginWith = async (page, username, password) => {
     await page.getByRole('button', { name: 'login' }).click()
     await page.getByLabel('username').fill(username)
@@ -12,9 +14,8 @@ const createBlog = async (page, title, author, url) => {
   await page.getByRole('textbox', { name: 'write url' }).fill(url)
   await page.getByRole('button', { name: 'create' }).click()
 
-  await page.getByText(title)
-  await page.getByText(author)
-  await page.getByText(url)
+  await expect(page.locator('.blog').filter({ hasText: `${title} ${author}` })).toBeVisible()
+  await page.reload()
 }
 
 export { loginWith, createBlog }

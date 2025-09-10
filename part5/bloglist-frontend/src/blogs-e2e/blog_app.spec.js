@@ -12,6 +12,15 @@ describe('Blog app', () => {
       }
     })
 
+    await request.post('/api/users', {
+      data: {
+        name: 'Dylan',
+        username: 'Contreras', 
+        password: '4444'
+      }
+    })
+
+
     await page.goto('/')
   })
 
@@ -44,7 +53,6 @@ describe('Blog app', () => {
 
     test('a new blog can be created', async ({ page }) => {
         await createBlog(page, 'created blog', 'Playwright', 'https://inventedUrl.com')
-        await expect(page.locator('.blog').getByText('created blog Playwright')).toBeVisible()
     })
 
     test('a blog can be liked', async({ page }) => {
@@ -57,13 +65,40 @@ describe('Blog app', () => {
 
     test('user who adds a blog can remove it', async({ page }) => {
         await createBlog(page, 'blog to delete', 'Playwright', 'https://blogToDelete.com')
-        await expect(page.locator('.blog').getByText('blog to delete Playwright')).toBeVisible()
-        await page.getByRole('button', { name: 'view' }).click()
 
+        // scope to the exact blog 
+        const blog = page.locator('.blog').filter({ hasText: 'blog to delete Playwright'})
+        await expect(blog).toBeVisible()
+        
+        // open the blog, check if remove button of that exact blog is seen
+        await blog.getByRole('button', { name: 'view' }).click()
+        const removeButton = blog.getByTestId('rmv-button')
+        await expect(removeButton).toBeVisible()
+
+        // handle window.confirm() before clicking
         page.on('dialog', dialog => dialog.accept())
-        await page.getByRole('button', { name: 'remove' }).click()
+        await removeButton.click()
         
         await expect(page.locator('.blog').getByText('blog to delete Playwright')).not.toBeVisible()
+    })
+
+    test('only the user who adds the blog can see the remove button', async({ page }) => {
+        // Basquez can see the remove button
+        createBlog(page, 'How to Create an Unforgettable Training Session in 8 Simple Steps', 'Deborah', 'https://www.sessionlab.com/blog/training-session-plan/')
+        
+        // go to the exact created blog
+        const blog = page.locator('.blog').filter({ hasText: 'How to Create an Unforgettable Training Session in 8 Simple Steps' })
+        await expect(blog).toBeVisible()
+
+        await blog.getByRole('button', { name: 'view' }).click()
+        await expect(blog.getByTestId('rmv-button')).toBeVisible()
+        await page.getByRole('button', { name: 'logout' }).click()
+
+        // another user must not see the remove button
+        await loginWith(page, 'Contreras', '4444')
+        await expect(page.getByText('Dylan logged in')).toBeVisible()
+        await blog.getByRole('button', { name: 'view' }).click()
+        await expect(blog.getByTestId('rmv-button')).not.toBeVisible()
     })
   })
 })
