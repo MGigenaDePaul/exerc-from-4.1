@@ -1,6 +1,5 @@
-import { test, describe, expect, beforeEach } from '@playwright/test'
+import { test, expect, describe, beforeEach } from '@playwright/test'
 import { loginWith, createBlog } from './helper'
-import blog from '../../../bloglist-backend/models/blog'
 
 describe('Blog app', () => {
   beforeEach(async ({ page, request }) => {
@@ -11,7 +10,7 @@ describe('Blog app', () => {
         username: 'Basquez',
         password: '5225'
       }
-    })
+    }) 
 
     await request.post('/api/users', {
       data: {
