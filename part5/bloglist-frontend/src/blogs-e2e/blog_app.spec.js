@@ -1,5 +1,6 @@
 import { test, describe, expect, beforeEach } from '@playwright/test'
 import { loginWith, createBlog } from './helper'
+import blog from '../../../bloglist-backend/models/blog'
 
 describe('Blog app', () => {
   beforeEach(async ({ page, request }) => {
@@ -99,6 +100,39 @@ describe('Blog app', () => {
         await expect(page.getByText('Dylan logged in')).toBeVisible()
         await blog.getByRole('button', { name: 'view' }).click()
         await expect(blog.getByTestId('rmv-button')).not.toBeVisible()
+    })
+
+    // function for last test
+    async function likeBlog(page, title, author, times) {
+      const blog = page.locator('.blog').filter({ hasText: `${title} ${author}`})
+      await expect(blog).toBeVisible()
+
+      await blog.getByRole('button', { name: 'view' }).click()
+      const likeButton = blog.getByRole('button', { name: 'like' })
+
+      for (let i = 0; i < times; i++) {
+        await likeButton.click()
+        await expect(blog.getByText(`likes ${i+1}`)).toBeVisible() 
+      }
+    }
+    
+    test('blogs are arranged in the order according to the likes', async({ page }) => {
+      await createBlog(page, 'The World', 'Author Most Likes', 'https://mostLikes.com')
+      await createBlog(page, 'Society', 'Donatelo', 'https://society.com')
+      await createBlog(page, 'A Simple Ball', 'Ronaldo', 'https://aSimpleBall.com')
+      await createBlog(page, 'Cards everywhere', 'Author Less Likes', 'https://cardsEverywhere.com')
+
+      await likeBlog(page, 'The World', 'Author Most Likes', 8)
+      await likeBlog(page, 'Society', 'Donatelo', 3)
+      await likeBlog(page, 'A Simple Ball', 'Ronaldo', 2)
+      await likeBlog(page, 'Cards everywhere', 'Author Less Likes', 0)
+
+      const blogs = page.locator('.blog')
+      // wait for the blogs in ascending order 
+      await expect(blogs.nth(0)).toContainText('Cards everywhere Author Less Likes')
+      await expect(blogs.nth(1)).toContainText('A Simple Ball Ronaldo')
+      await expect(blogs.nth(2)).toContainText('Society Donatelo')
+      await expect(blogs.nth(3)).toContainText('The World Author Most Likes')
     })
   })
 })

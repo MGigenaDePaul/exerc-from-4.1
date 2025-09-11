@@ -15,7 +15,7 @@ const createBlog = async (page, title, author, url) => {
   await page.getByRole('button', { name: 'create' }).click()
 
   await expect(page.locator('.blog').filter({ hasText: `${title} ${author}` })).toBeVisible()
-  await page.reload()
+  await page.reload() // helped for seeing the remove button
 }
 
 export { loginWith, createBlog }

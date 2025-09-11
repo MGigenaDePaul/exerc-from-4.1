@@ -29,7 +29,7 @@ const Blog = ({ currentUser, blog, handleLikeUpdate, handleBlogDelete }) => {
           <p style={{ margin: '4px 0' }}>likes {blog.likes} <button onClick={() => handleLikeUpdate(blog, blog.id)}>like</button></p>
           <p style={{ margin: '4px 0' }}>{blog.user.name}</p>
 
-          {currentUser && (currentUser.username === blog.user.username) && (
+          {currentUser && (currentUser?.username === blog.user?.username) && (
             <button data-testid='rmv-button' onClick={() => handleBlogDelete(blog.id)}>remove</button>)
           }
         </div>
