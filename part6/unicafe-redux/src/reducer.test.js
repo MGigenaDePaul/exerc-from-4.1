@@ -29,7 +29,6 @@ describe('unicafe reducer', () => {
     }
   
     const state = action.payload
-    console.log('watching', state)
     
     deepFreeze(state)
     const newState = counterReducer(state, action)
