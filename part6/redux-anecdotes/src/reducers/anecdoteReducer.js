@@ -1,3 +1,5 @@
+import { createSlice } from "@reduxjs/toolkit"
+
 const anecdotesAtStart = [
   'If it hurts, do it more often',
   'Adding manpower to a late software project makes it later!',
@@ -7,7 +9,7 @@ const anecdotesAtStart = [
   'Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.'
 ]
 
-const getId = () => (100000 * Math.random()).toFixed(0)
+const getId = () => Number((100000 * Math.random()).toFixed(0))
 
 const asObject = (anecdote) => {
   return {
@@ -19,40 +21,68 @@ const asObject = (anecdote) => {
 
 const initialState = anecdotesAtStart.map(asObject)
 
-const reducer = (state = initialState, action) => {
-  console.log('state now: ', state)
-  console.log('action', action)
+const anecdoteSlice = createSlice({
+  name: 'anecdotes',
+  initialState,
+  reducers: {
+    createAnecdote(state, action){
+      const content = action.payload
+      state.push({
+        content,
+        votes: 0,
+        id: getId()
+      })
+    }, 
 
-  switch(action.type){
-    case 'VOTE': {
-      const id = action.payload.id
-      return state.map(a => 
-        a.id !== id ? a : {...a, votes: a.votes + 1}
+    vote(state, action){
+      const id = action.payload
+      console.log(state)
+      return state.map(s => 
+        s.id !== id ? s : {...s, votes: s.votes + 1}
       )
     }
-    case 'NEW_ANECDOTE': {
-      return [...state, action.payload]
-    }
   }
-  return state
-}
+})
 
-export const createAnecdote = (content) => {
-  return {
-    type: 'NEW_ANECDOTE',
-    payload: {
-      content,
-      votes: 0,
-      id: getId()
-    }
-  }
-}
 
-export const vote = (id) => {
-  return {
-    type: 'VOTE',
-    payload: { id },
-  }
-}
+export const {createAnecdote, vote} = anecdoteSlice.actions 
+export default anecdoteSlice.reducer
 
-export default reducer
+
+// const reducer = (state = initialState, action) => {
+//   console.log('state now: ', state)
+//   console.log('action', action)
+
+//   switch(action.type){
+//     case 'VOTE': {
+//       const id = action.payload.id
+//       return state.map(a => 
+//         a.id !== id ? a : {...a, votes: a.votes + 1}
+//       )
+//     }
+//     case 'NEW_ANECDOTE': {
+//       return [...state, action.payload]
+//     }
+//   }
+//   return state
+// }
+
+// export const createAnecdote = (content) => {
+//   return {
+//     type: 'NEW_ANECDOTE',
+//     payload: {
+//       content,
+//       votes: 0,
+//       id: getId()
+//     }
+//   }
+// }
+
+// export const vote = (id) => {
+//   return {
+//     type: 'VOTE',
+//     payload: { id },
+//   }
+// }
+
+// export default reducer
