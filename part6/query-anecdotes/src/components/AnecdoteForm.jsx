@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { createAnecdote } from "../services/requests"
+import { createAnecdote } from "../requests"
 
 const AnecdoteForm = () => {
   const queryClient = useQueryClient()
