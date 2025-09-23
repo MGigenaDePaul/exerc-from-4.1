@@ -6,7 +6,8 @@ const AnecdoteForm = () => {
   const newAnecdoteMutation = useMutation({ 
     mutationFn: createAnecdote, 
     onSuccess: (newAnecdote) => {
-        queryClient.invalidateQueries({queryKey:['notes']})      
+        const anecdotes = queryClient.getQueryData(['anecdotes'])
+        queryClient.setQueryData(['anecdotes'], anecdotes.concat(newAnecdote))      
     }
   })
 
