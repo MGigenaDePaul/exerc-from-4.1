@@ -3,8 +3,19 @@ import Notification from './components/Notification'
 import { useReducer } from 'react'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import { getAnecdotes, updateAnecdote} from './requests'
+import NotificationContext from './NotificationContext'
 
-const App = () => {
+const notificationReducer = (state, action) => {
+  switch(action.type) {
+    case 'VOTE':
+      return `anecdote ${action.payload} voted`
+    default: 
+      return state
+  }
+}
+
+const App = () => {  
+  const [notification, notificationDispatch] = useReducer(notificationReducer, 'initial notification')
   const queryClient = useQueryClient()
 
   const updateAnecdoteMutation = useMutation({
@@ -12,12 +23,10 @@ const App = () => {
       onSuccess: () => {
         queryClient.invalidateQueries('anecdotes')
       } 
-    })
-
+  })
+  
   const handleVote = (anecdote) => {
-      console.log('before voting', anecdote)
       updateAnecdoteMutation.mutate({...anecdote, votes: anecdote.votes + 1})
-      console.log('after voting', anecdote)
   }
 
   const result = useQuery({
@@ -38,8 +47,9 @@ const App = () => {
   }
   
   const anecdotes = result.data
-
+  console.log(anecdotes)
   return (
+    <NotificationContext.Provider value={[notification, notificationDispatch]}>
     <div>
       <h3>Anecdote app</h3>
     
@@ -53,11 +63,17 @@ const App = () => {
           </div>
           <div>
             has {anecdote.votes}
-            <button onClick={() => handleVote(anecdote)}>vote</button>
+            <button onClick={() => {  
+              handleVote(anecdote)
+              notificationDispatch({type:'VOTE', payload: anecdote.content})
+            }}>
+              vote
+            </button>
           </div>
         </div>
       )}
     </div>
+    </NotificationContext.Provider>
   )
 }
 
