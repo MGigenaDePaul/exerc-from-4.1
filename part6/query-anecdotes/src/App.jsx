@@ -8,21 +8,22 @@ const App = () => {
 
   const updateAnecdoteMutation = useMutation({
       mutationFn: updateAnecdote,
-      onSucess: () => {
+      onSuccess: () => {
         queryClient.invalidateQueries('anecdotes')
-      }
+      } 
     })
+
   const handleVote = (anecdote) => {
-      console.log('vote')
       console.log('before voting', anecdote)
-      updateAnecdoteMutation.mutate({...anecdote, votes: anecdote.votes++})
+      updateAnecdoteMutation.mutate({...anecdote, votes: anecdote.votes + 1})
       console.log('after voting', anecdote)
   }
 
   const result = useQuery({
     queryKey:['anecdotes'],
     queryFn: getAnecdotes,
-    retry: 1
+    retry: 1,
+    refetchOnWindowFocus: false
   })
 
   console.log(JSON.parse(JSON.stringify(result)))
