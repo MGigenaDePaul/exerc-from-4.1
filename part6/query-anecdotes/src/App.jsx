@@ -8,9 +8,11 @@ import NotificationContext from './NotificationContext'
 const notificationReducer = (state, action) => {
   switch(action.type) {
     case 'VOTE':
-      return `anecdote ${action.payload} voted`
+      return `anecdote '${action.payload}' voted`
     case 'CREATE':
-      return `anecdote ${action.payload} created`
+      return `anecdote '${action.payload}' created`
+    case 'WRONG_LENGTH':
+      return `${action.payload}`
     default: 
       return state
   }

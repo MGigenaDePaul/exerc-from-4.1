@@ -5,10 +5,14 @@ import NotificationContext from "../NotificationContext"
 
 const AnecdoteForm = () => {
   const [notification, notificationDispatch] = useContext(NotificationContext)
-  
+
   const queryClient = useQueryClient()
   const newAnecdoteMutation = useMutation({ 
     mutationFn: createAnecdote, 
+    onError: (error) => {
+        console.log(error)
+        notificationDispatch({type: 'WRONG_LENGTH', payload: `${error}`})
+    },
     onSuccess: (newAnecdote) => {
         const anecdotes = queryClient.getQueryData(['anecdotes'])
         queryClient.setQueryData(['anecdotes'], anecdotes.concat(newAnecdote))      
@@ -21,10 +25,7 @@ const AnecdoteForm = () => {
     event.target.anecdote.value = ''
     console.log('new anecdote')
 
-    if (content.length < 5) {
-      console.log('content should be at least 5 characters')
-      return null
-    }
+
     newAnecdoteMutation.mutate({ content, votes: 0 })
     notificationDispatch({type: 'CREATE', payload: content})
   }
