@@ -12,10 +12,14 @@ const AnecdoteForm = () => {
     onError: (error) => {
         console.log(error)
         notificationDispatch({type: 'WRONG_LENGTH', payload: `${error}`})
+        setTimeout(() => {
+          notificationDispatch({type: 'CLEAR'})
+        }, 5000)
     },
     onSuccess: (newAnecdote) => {
         const anecdotes = queryClient.getQueryData(['anecdotes'])
-        queryClient.setQueryData(['anecdotes'], anecdotes.concat(newAnecdote))      
+        queryClient.setQueryData(['anecdotes'], anecdotes.concat(newAnecdote))
+            
     }
   })
 
@@ -28,6 +32,9 @@ const AnecdoteForm = () => {
 
     newAnecdoteMutation.mutate({ content, votes: 0 })
     notificationDispatch({type: 'CREATE', payload: content})
+    setTimeout(() => {
+      notificationDispatch({type: 'CLEAR'})
+    }, 5000)  
   }
 
   return (

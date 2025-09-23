@@ -13,6 +13,8 @@ const notificationReducer = (state, action) => {
       return `anecdote '${action.payload}' created`
     case 'WRONG_LENGTH':
       return `${action.payload}`
+    case 'CLEAR':
+      return ''
     default: 
       return state
   }
@@ -71,6 +73,9 @@ const App = () => {
             <button onClick={() => {  
               handleVote(anecdote)
               notificationDispatch({type:'VOTE', payload: anecdote.content})
+              setTimeout(() => {
+                notificationDispatch({type:'CLEAR'})
+              }, 5000)
             }}>
               vote
             </button>
