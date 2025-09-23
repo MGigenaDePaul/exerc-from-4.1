@@ -18,6 +18,7 @@ const notificationReducer = (state, action) => {
 
 const App = () => {  
   const [notification, notificationDispatch] = useReducer(notificationReducer, 'initial notification')
+
   const queryClient = useQueryClient()
 
   const updateAnecdoteMutation = useMutation({
@@ -56,7 +57,7 @@ const App = () => {
       <h3>Anecdote app</h3>
     
       <Notification />
-      <AnecdoteForm />
+      <AnecdoteForm notificationDispatch={notificationDispatch}/>
     
       {anecdotes.map(anecdote =>
         <div key={anecdote.id}>
