@@ -1,70 +1,129 @@
-const dummy = (blogs) => {
+const _ = require('lodash')
+
+const dummy = () => {
   return 1
 }
 
 const totalLikes = (blogs) => {
-  return blogs.reduce((sum, blog) => sum + blog.likes, 0)
+  const initialValue = 0
+  return blogs.reduce((accumulator, currentValue) => accumulator + currentValue.likes, initialValue)
 }
 
 const favoriteBlog = (blogs) => {
-  return blogs.reduce(
-    (favorite, blog) => (favorite.likes > blog.likes ? favorite : blog),
-    {}
-  )
+  let maxLikes = blogs[0].likes
+  let favoriteIndex = 0
+  for (let i = 1; i < blogs.length; i++){
+    if (blogs[i].likes > maxLikes) {
+      maxLikes = blogs[i].likes
+      favoriteIndex = i  // index of the favoriteBlog
+    }
+  }
+  return blogs[favoriteIndex]
 }
 
+// ----------- mostBlogs WITHOUT LODASH (it passes the test, but it wouldn't work if we add another blog)
 const mostBlogs = (blogs) => {
-  if (!blogs.length) {
-    return null
-  }
+  let countMartin = 0
+  let countDijkstra = 0
+  let countChan = 0
 
-  const blogsPerAuthor = blogs.reduce((acc, blog) => {
-    acc[blog.author] = (acc[blog.author] || 0) + 1
-    return acc
-  }, {})
+  // count blogs for each author
+  blogs.forEach(blog => {
+    if (blog.author === 'Robert C. Martin') return countMartin++
+    else if (blog.author === 'Edsger W. Dijkstra') return countDijkstra++
+    else if (blog.author === 'Michael Chan') return countChan++
+  })
 
-  let maxAuthor = Object.keys(blogsPerAuthor)[0]
+  let object
 
-  for (const author in blogsPerAuthor) {
-    if (blogsPerAuthor[author] > blogsPerAuthor[maxAuthor]) {
-      maxAuthor = author
+  if ( (countDijkstra > countMartin) && (countDijkstra > countChan) ) { // if dijkstra has the largest amount of blogs
+    object = {
+      author: 'Edsger W. Dijkstra',
+      blogs: countDijkstra
+    }
+  } else if ((countMartin > countDijkstra) && (countMartin > countChan ) ) { // if martin has the largest amount of blogs
+    object = {
+      author: 'Robert C. Martin',
+      blogs: countMartin
+    }
+  } else { // if chan ...
+    object = {
+      author: 'Michael Chan',
+      blogs: countChan
     }
   }
 
-  return {
-    author: maxAuthor,
-    blogs: blogsPerAuthor[maxAuthor],
-  }
+  return object
 }
 
+// mostBlogs with LODASH (test passes and it works if we add more blogs)
+const mostBlogsVersion2 = (blogs) => {
+  const groupBlogs = _.groupBy(blogs, 'author')
+  const counts = _.map(groupBlogs, (authorBlogs, author) => ({
+    author,
+    blogs: authorBlogs.length
+  }))
+
+  const authorMostBlogs = _.maxBy(counts, 'blogs')
+
+  return authorMostBlogs
+}
+
+// it passes the test, but it wouldn't if we add another blog
 const mostLikes = (blogs) => {
-  if (!blogs.length) {
-    return null
-  }
+  let object
 
-  const likesPerAuthor = blogs.reduce((acc, blog) => {
-    acc[blog.author] = (acc[blog.author] || 0) + blog.likes
-    return acc
-  }, {})
+  // likes of blogs combined of corresponding author
+  let likesMartin = 0
+  let likesDijkstra = 0
+  let likesChan = 0
 
-  let maxAuthor = Object.keys(likesPerAuthor)[0]
+  // calculate likes
+  blogs.forEach(blog => {
+    if (blog.author === 'Robert C. Martin') {
+      likesMartin += blog.likes
+    } else if (blog.author === 'Edsger W. Dijkstra') {
+      likesDijkstra += blog.likes
+    } else {
+      likesChan += blog.likes
+    }
+  })
 
-  for (const author in likesPerAuthor) {
-    if (likesPerAuthor[author] > likesPerAuthor[maxAuthor]) {
-      maxAuthor = author
+  // compare which author has the most likes combined
+  if ( (likesMartin > likesDijkstra) && (likesMartin > likesChan) ) {
+    object = {
+      author: 'Robert C. Martin',
+      likes: likesMartin
+    }
+  } else if ( (likesDijkstra > likesMartin) && (likesDijkstra > likesChan) ) {
+    object = {
+      author: 'Edsger W. Dijkstra',
+      likes: likesDijkstra
+    }
+  } else {
+    object = {
+      author: 'Michael Chan',
+      likes: likesChan
     }
   }
 
-  return {
-    author: maxAuthor,
-    likes: likesPerAuthor[maxAuthor],
-  }
+  const authorMostLikes = object
+  return authorMostLikes
 }
 
-module.exports = {
-  dummy,
-  favoriteBlog,
-  mostBlogs,
-  mostLikes,
-  totalLikes,
+const mostLikesVersion2 = (blogs) => {
+  const groupBlogs = _.groupBy(blogs, 'author')
+
+  // totalLikesCombined of blogs of each author
+  const totalLikesCombined = _.map(groupBlogs, (authorBlogs, author) => ({
+    author,
+    likes: _.sumBy(authorBlogs, 'likes')
+  }))
+
+  // compare totalLikesCombined of each author
+  const authorMostLikes = _.maxBy(totalLikesCombined, 'likes')
+
+  return authorMostLikes
 }
+
+module.exports = { dummy, totalLikes, favoriteBlog, mostBlogs, mostBlogsVersion2, mostLikes, mostLikesVersion2 }

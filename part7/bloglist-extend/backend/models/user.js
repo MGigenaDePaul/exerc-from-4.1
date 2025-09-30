@@ -1,20 +1,20 @@
 const mongoose = require('mongoose')
 
-const userSchema = mongoose.Schema({
+const userSchema = new mongoose.Schema({
   blogs: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Blog',
-    },
+      ref: 'Blog'
+    }
   ],
   username: {
     type: String,
-    minlength: 3,
+    minLength: 3,
     required: true,
-    unique: true,
+    unique: true
   },
   name: String,
-  passwordHash: String,
+  passwordHash: String
 })
 
 userSchema.set('toJSON', {
@@ -22,8 +22,9 @@ userSchema.set('toJSON', {
     returnedObject.id = returnedObject._id.toString()
     delete returnedObject._id
     delete returnedObject.__v
+    // the passwordHash should not be revealed
     delete returnedObject.passwordHash
-  },
+  }
 })
 
 const User = mongoose.model('User', userSchema)
