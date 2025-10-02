@@ -40,8 +40,8 @@ const eliminate = async (id) => {
 }
 
 export default {
-  getAll,
   setToken,
+  getAll,
   create,
   update,
   eliminate

@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
+import { useReducer } from 'react'
+import { useQueryClient, useQuery } from '@tanstack/react-query'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import Notification from './components/Notification'
@@ -7,7 +9,7 @@ import './index.css'
 import LoginForm from './components/LoginForm'
 import Togglable from './components/Togglable'
 import BlogForm from './components/BlogForm'
-import { useReducer } from 'react'
+
 import NotificationContext from './NotificationContext'
 
 const notificationReducer = (state, action) => {
@@ -24,21 +26,23 @@ const notificationReducer = (state, action) => {
 }
 
 const App = () => {
-  const [notification, notificationDispatch] = useReducer(
-    notificationReducer,
-    ''
-  )
+  const [notification, notificationDispatch] = useReducer(notificationReducer, '')
 
-  const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
   const blogFormRef = useRef()
+  const queryClient = useQueryClient() 
 
-  useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs))
-  }, [])
+  const result = useQuery({
+    queryKey:['blogs'],
+    queryFn: blogService.getAll,
+    retry: 1,
+  })
+  console.log(JSON.parse(JSON.stringify(result)))
+  
+  const blogs = result.data
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
@@ -148,6 +152,9 @@ const App = () => {
         {!user && loginForm()}
         {user && (
           <div>
+            <div>
+              {result.isLoading && <div>loading data...</div>}
+            </div>
             <h2>blogs</h2>
             <Notification />
             {user && (
@@ -164,7 +171,7 @@ const App = () => {
             <Togglable buttonLabel="new blog" ref={blogFormRef}>
               <BlogForm createBlog={addBlog} />
             </Togglable>
-            {[...blogs]
+            {blogs && [...blogs]
               .sort((a, b) => a.likes - b.likes)
               .map((blog) => (
                 <Blog
