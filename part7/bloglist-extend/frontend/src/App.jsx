@@ -10,8 +10,8 @@ import BlogForm from './components/BlogForm'
 import { useReducer } from 'react'
 import NotificationContext from './NotificationContext'
 
-const notificationReducer = (state, action) => {  
-  switch(action.type){
+const notificationReducer = (state, action) => {
+  switch (action.type) {
     case 'CREATE_BLOG':
       return `a new blog "${action.payload.title}" by ${action.payload.author} created`
     case 'CLEAR':
@@ -24,7 +24,10 @@ const notificationReducer = (state, action) => {
 }
 
 const App = () => {
-  const [notification, notificationDispatch] = useReducer(notificationReducer, '')
+  const [notification, notificationDispatch] = useReducer(
+    notificationReducer,
+    ''
+  )
 
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
@@ -34,9 +37,7 @@ const App = () => {
   const blogFormRef = useRef()
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs(blogs)
-    )
+    blogService.getAll().then((blogs) => setBlogs(blogs))
   }, [])
 
   useEffect(() => {
@@ -48,21 +49,25 @@ const App = () => {
     }
   }, [])
 
-
   const addBlog = (blogObject) => {
     blogFormRef.current.toggleVisibility()
-    blogService.create(blogObject).then(createdBlog => {
+    blogService.create(blogObject).then((createdBlog) => {
       setBlogs(blogs.concat(createdBlog))
     })
   }
 
   const handleLikeUpdate = (blog, id) => {
-    const findBlog = blogs.find(blog => blog.id === id)
-    const changedBlog = { ...findBlog, user: findBlog.user.id, likes: findBlog.likes + 1 }
+    const findBlog = blogs.find((blog) => blog.id === id)
+    const changedBlog = {
+      ...findBlog,
+      user: findBlog.user.id,
+      likes: findBlog.likes + 1
+    }
 
-    blogService.update(blog.id, changedBlog)
-      .then(returnedBlog => {
-        setBlogs(blogs.map(blog => blog.id === id ? returnedBlog : blog))
+    blogService
+      .update(blog.id, changedBlog)
+      .then((returnedBlog) => {
+        setBlogs(blogs.map((blog) => (blog.id === id ? returnedBlog : blog)))
       })
       .catch(() => {
         console.log('could not update likes')
@@ -70,21 +75,24 @@ const App = () => {
   }
 
   const handleBlogDelete = (id) => {
-    const blog = blogs.find(blog => blog.id === id)
-    const ok = window.confirm(`Do you want to remove blog ${blog.title} by ${blog.author}`)
+    const blog = blogs.find((blog) => blog.id === id)
+    const ok = window.confirm(
+      `Do you want to remove blog ${blog.title} by ${blog.author}`
+    )
     if (ok) {
-      blogService.eliminate(id)
+      blogService
+        .eliminate(id)
         .then(() => {
-          setBlogs(blogs.filter(blog => blog.id !== id))
+          setBlogs(blogs.filter((blog) => blog.id !== id))
         })
         .catch(() => {
           console.log(`${blog.title} was already deleted from the server`)
-          setBlogs(blogs.filter(blog => blog.id !== id))
+          setBlogs(blogs.filter((blog) => blog.id !== id))
         })
     }
   }
 
-  const handleLogin = async event => {
+  const handleLogin = async (event) => {
     event.preventDefault()
     try {
       const user = await loginService.login({ username, password })
@@ -94,24 +102,22 @@ const App = () => {
       setUser(user)
       setUsername('')
       setPassword('')
-    }
-    catch {
-      notificationDispatch({type: 'ERROR'})
+    } catch {
+      notificationDispatch({ type: 'ERROR' })
       setTimeout(() => {
-        notificationDispatch({type: 'CLEAR'})
+        notificationDispatch({ type: 'CLEAR' })
       }, 5000)
     }
   }
 
-  const handleLogOut = async() => {
+  const handleLogOut = async () => {
     try {
       window.localStorage.removeItem('loggedBlogappUser')
       blogService.setToken(null)
       setUser(null)
       setUsername('')
       setPassword('')
-    }
-    catch {
+    } catch {
       console.log('failed logging out')
     }
   }
@@ -120,15 +126,15 @@ const App = () => {
     if (user === null) {
       return (
         <div>
-            <Togglable buttonLabel="login">
-              <LoginForm
-                username={username}
-                password={password}
-                handleUsernameChange={({ target }) => setUsername(target.value)}
-                handlePasswordChange={({ target }) => setPassword(target.value)}
-                handleSubmit={handleLogin}
-              />
-            </Togglable>
+          <Togglable buttonLabel="login">
+            <LoginForm
+              username={username}
+              password={password}
+              handleUsernameChange={({ target }) => setUsername(target.value)}
+              handlePasswordChange={({ target }) => setPassword(target.value)}
+              handleSubmit={handleLogin}
+            />
+          </Togglable>
         </div>
       )
     }
@@ -136,7 +142,9 @@ const App = () => {
 
   return (
     <div>
-      <NotificationContext.Provider value={[notification, notificationDispatch]}>
+      <NotificationContext.Provider
+        value={[notification, notificationDispatch]}
+      >
         {!user && loginForm()}
         {user && (
           <div>
@@ -145,26 +153,33 @@ const App = () => {
             {user && (
               <div>
                 <p style={{ display: 'inline-flex' }}>{user.name} logged in</p>
-                <button style={{ display: 'inline-flex' }} onClick={() => handleLogOut()}>logout</button>
+                <button
+                  style={{ display: 'inline-flex' }}
+                  onClick={() => handleLogOut()}
+                >
+                  logout
+                </button>
               </div>
             )}
             <Togglable buttonLabel="new blog" ref={blogFormRef}>
               <BlogForm createBlog={addBlog} />
             </Togglable>
-            {[...blogs].sort((a,b) => (a.likes) - (b.likes)).map(blog =>
-              <Blog 
-                key={blog.id} blog={blog} 
-                handleLikeUpdate={handleLikeUpdate} 
-                handleBlogDelete={handleBlogDelete}
-                currentUser={user}
-              />)
-            }
+            {[...blogs]
+              .sort((a, b) => a.likes - b.likes)
+              .map((blog) => (
+                <Blog
+                  key={blog.id}
+                  blog={blog}
+                  handleLikeUpdate={handleLikeUpdate}
+                  handleBlogDelete={handleBlogDelete}
+                  currentUser={user}
+                />
+              ))}
           </div>
         )}
       </NotificationContext.Provider>
     </div>
   )
 }
-
 
 export default App

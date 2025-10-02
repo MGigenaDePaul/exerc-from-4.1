@@ -1,5 +1,5 @@
-import { createContext } from 'react' 
+import { createContext } from 'react'
 
-const NotificationContext = createContext() 
+const NotificationContext = createContext()
 
 export default NotificationContext

@@ -11,30 +11,43 @@ const Blog = ({ currentUser, blog, handleLikeUpdate, handleBlogDelete }) => {
     marginBottom: 5
   }
 
-
   return (
-    <div className='blog' style={blogStyle}>
+    <div className="blog" style={blogStyle}>
       <div>
         <div style={{ display: 'inline-flex' }}>
           {blog.title} {blog.author}
-          <button aria-pressed={viewBlog} onClick={() => setViewBlog(v => !v)}>
+          <button
+            aria-pressed={viewBlog}
+            onClick={() => setViewBlog((v) => !v)}
+          >
             {viewBlog ? 'hide' : 'view'}
           </button>
         </div>
       </div>
-    
+
       {viewBlog && (
         <div>
           <p style={{ margin: '4px 0' }}>{blog.url}</p>
-          <p style={{ margin: '4px 0' }}>likes {blog.likes} <button onClick={() => handleLikeUpdate(blog, blog.id)}>like</button></p>
+          <p style={{ margin: '4px 0' }}>
+            likes {blog.likes}{' '}
+            <button onClick={() => handleLikeUpdate(blog, blog.id)}>
+              like
+            </button>
+          </p>
           <p style={{ margin: '4px 0' }}>{blog.user.name}</p>
 
-          {currentUser && (currentUser?.username === blog.user?.username) && (
-            <button data-testid='rmv-button' onClick={() => handleBlogDelete(blog.id)}>remove</button>)
-          }
+          {currentUser && currentUser?.username === blog.user?.username && (
+            <button
+              data-testid="rmv-button"
+              onClick={() => handleBlogDelete(blog.id)}
+            >
+              remove
+            </button>
+          )}
         </div>
       )}
     </div>
-  )}
+  )
+}
 
 export default Blog

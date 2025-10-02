@@ -1,4 +1,5 @@
 import { useContext, useState } from 'react'
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import NotificationContext from '../NotificationContext'
 
 const BlogForm = ({ createBlog }) => {
@@ -19,9 +20,13 @@ const BlogForm = ({ createBlog }) => {
     setNewTitle('')
     setNewAuthor('')
     setNewUrl('')
-    notificationDispatch({type:'CREATE_BLOG', payload: {title: newTitle, author: newAuthor} })
+
+    notificationDispatch({
+      type: 'CREATE_BLOG',
+      payload: { title: newTitle, author: newAuthor }
+    })
     setTimeout(() => {
-      notificationDispatch({type: 'CLEAR'})
+      notificationDispatch({ type: 'CLEAR' })
     }, 5000)
   }
 
@@ -29,12 +34,30 @@ const BlogForm = ({ createBlog }) => {
     <div>
       <h2>create new</h2>
       <form onSubmit={addBlog}>
-            title: <input type="text" value={newTitle} onChange={event => setNewTitle(event.target.value)} placeholder='write title' />
-        <br/>
-            author: <input type="text" value={newAuthor} onChange={event => setNewAuthor(event.target.value)} placeholder='write author' />
-        <br/>
-            url: <input type="text" value={newUrl} onChange={event => setNewUrl(event.target.value)} placeholder='write url' />
-        <br/>
+        title:{' '}
+        <input
+          type="text"
+          value={newTitle}
+          onChange={(event) => setNewTitle(event.target.value)}
+          placeholder="write title"
+        />
+        <br />
+        author:{' '}
+        <input
+          type="text"
+          value={newAuthor}
+          onChange={(event) => setNewAuthor(event.target.value)}
+          placeholder="write author"
+        />
+        <br />
+        url:{' '}
+        <input
+          type="text"
+          value={newUrl}
+          onChange={(event) => setNewUrl(event.target.value)}
+          placeholder="write url"
+        />
+        <br />
         <button type="submit">create</button>
       </form>
     </div>
