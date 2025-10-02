@@ -39,6 +39,7 @@ const App = () => {
     queryKey:['blogs'],
     queryFn: blogService.getAll,
     retry: 1,
+    refetchOnWindowFocus: false
   })
   console.log(JSON.parse(JSON.stringify(result)))
   
