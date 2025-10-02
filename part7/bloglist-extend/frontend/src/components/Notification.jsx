@@ -1,10 +1,15 @@
-const Notification = ({ message }) => {
-  if (message === null) {
+import { useContext } from "react"
+import NotificationContext from "../NotificationContext"
+
+const Notification = () => {
+  const [notification, notificationDispatch] = useContext(NotificationContext)
+  
+  if (!notification) {
     return null
   }
 
-  const className = message.includes('new') ? 'message success' : 'message error'
-  return <div className={className}> {message} </div>
+  const className = notification.includes('new') ? 'message success' : 'message error'
+  return <div className={className}> {notification} </div>
 }   
 
 export default Notification

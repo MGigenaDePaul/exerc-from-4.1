@@ -7,13 +7,29 @@ import './index.css'
 import LoginForm from './components/LoginForm'
 import Togglable from './components/Togglable'
 import BlogForm from './components/BlogForm'
+import { useReducer } from 'react'
+import NotificationContext from './NotificationContext'
+
+const notificationReducer = (state, action) => {  
+  switch(action.type){
+    case 'CREATE_BLOG':
+      return `a new blog "${action.payload.title}" by ${action.payload.author} created`
+    case 'CLEAR':
+      return ''
+    case 'ERROR':
+      return 'Wrong credentials'
+    default:
+      return state
+  }
+}
 
 const App = () => {
+  const [notification, notificationDispatch] = useReducer(notificationReducer, '')
+
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [message, setMessage] = useState(null)
 
   const blogFormRef = useRef()
 
@@ -37,10 +53,6 @@ const App = () => {
     blogFormRef.current.toggleVisibility()
     blogService.create(blogObject).then(createdBlog => {
       setBlogs(blogs.concat(createdBlog))
-      setMessage(`a new blog ${blogObject.title} by ${blogObject.author} added`)
-      setTimeout(() => {
-        setMessage(null)
-      }, 5000)
     })
   }
 
@@ -84,9 +96,9 @@ const App = () => {
       setPassword('')
     }
     catch {
-      setMessage('Wrong credentials')
+      notificationDispatch({type: 'ERROR'})
       setTimeout(() => {
-        setMessage(null)
+        notificationDispatch({type: 'CLEAR'})
       }, 5000)
     }
   }
@@ -108,16 +120,15 @@ const App = () => {
     if (user === null) {
       return (
         <div>
-          <Togglable buttonLabel="login">
-            <LoginForm
-              username={username}
-              password={password}
-              handleUsernameChange={({ target }) => setUsername(target.value)}
-              handlePasswordChange={({ target }) => setPassword(target.value)}
-              handleSubmit={handleLogin}
-              message={message}
-            />
-          </Togglable>
+            <Togglable buttonLabel="login">
+              <LoginForm
+                username={username}
+                password={password}
+                handleUsernameChange={({ target }) => setUsername(target.value)}
+                handlePasswordChange={({ target }) => setPassword(target.value)}
+                handleSubmit={handleLogin}
+              />
+            </Togglable>
         </div>
       )
     }
@@ -125,30 +136,32 @@ const App = () => {
 
   return (
     <div>
-      {!user && loginForm()}
-      {user && (
-        <div>
-          <h2>blogs</h2>
-          <Notification message={message}/>
-          {user && (
-            <div>
-              <p style={{ display: 'inline-flex' }}>{user.name} logged in</p>
-              <button style={{ display: 'inline-flex' }} onClick={() => handleLogOut()}>logout</button>
-            </div>
-          )}
-          <Togglable buttonLabel="new blog" ref={blogFormRef}>
-            <BlogForm createBlog={addBlog} />
-          </Togglable>
-          {[...blogs].sort((a,b) => (a.likes) - (b.likes)).map(blog =>
-            <Blog 
-              key={blog.id} blog={blog} 
-              handleLikeUpdate={handleLikeUpdate} 
-              handleBlogDelete={handleBlogDelete}
-              currentUser={user}
-            />)
-          }
-        </div>
-      )}
+      <NotificationContext.Provider value={[notification, notificationDispatch]}>
+        {!user && loginForm()}
+        {user && (
+          <div>
+            <h2>blogs</h2>
+            <Notification />
+            {user && (
+              <div>
+                <p style={{ display: 'inline-flex' }}>{user.name} logged in</p>
+                <button style={{ display: 'inline-flex' }} onClick={() => handleLogOut()}>logout</button>
+              </div>
+            )}
+            <Togglable buttonLabel="new blog" ref={blogFormRef}>
+              <BlogForm createBlog={addBlog} />
+            </Togglable>
+            {[...blogs].sort((a,b) => (a.likes) - (b.likes)).map(blog =>
+              <Blog 
+                key={blog.id} blog={blog} 
+                handleLikeUpdate={handleLikeUpdate} 
+                handleBlogDelete={handleBlogDelete}
+                currentUser={user}
+              />)
+            }
+          </div>
+        )}
+      </NotificationContext.Provider>
     </div>
   )
 }

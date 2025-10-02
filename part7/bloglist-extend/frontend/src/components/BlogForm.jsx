@@ -1,6 +1,9 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
+import NotificationContext from '../NotificationContext'
 
 const BlogForm = ({ createBlog }) => {
+  const [notification, notificationDispatch] = useContext(NotificationContext)
+
   const [newTitle, setNewTitle] = useState('')
   const [newAuthor, setNewAuthor] = useState('')
   const [newUrl, setNewUrl] = useState('')
@@ -16,6 +19,10 @@ const BlogForm = ({ createBlog }) => {
     setNewTitle('')
     setNewAuthor('')
     setNewUrl('')
+    notificationDispatch({type:'CREATE_BLOG', payload: {title: newTitle, author: newAuthor} })
+    setTimeout(() => {
+      notificationDispatch({type: 'CLEAR'})
+    }, 5000)
   }
 
   return (
