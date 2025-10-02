@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useReducer } from 'react'
-import { useQueryClient, useQuery } from '@tanstack/react-query'
+import { useQueryClient, useQuery, useMutation } from '@tanstack/react-query'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import Notification from './components/Notification'
@@ -33,16 +33,16 @@ const App = () => {
   const [user, setUser] = useState(null)
 
   const blogFormRef = useRef()
-  const queryClient = useQueryClient() 
+  const queryClient = useQueryClient()
 
   const result = useQuery({
-    queryKey:['blogs'],
+    queryKey: ['blogs'],
     queryFn: blogService.getAll,
     retry: 1,
     refetchOnWindowFocus: false
   })
   console.log(JSON.parse(JSON.stringify(result)))
-  
+
   const blogs = result.data
 
   useEffect(() => {
@@ -61,39 +61,29 @@ const App = () => {
     })
   }
 
-  const handleLikeUpdate = (blog, id) => {
-    const findBlog = blogs.find((blog) => blog.id === id)
-    const changedBlog = {
-      ...findBlog,
-      user: findBlog.user.id,
-      likes: findBlog.likes + 1
+  const updatedBlogMutation = useMutation({
+    mutationFn: blogService.update,
+    onSuccess: () => {
+      queryClient.invalidateQueries('blogs')
     }
+  })
 
-    blogService
-      .update(blog.id, changedBlog)
-      .then((returnedBlog) => {
-        setBlogs(blogs.map((blog) => (blog.id === id ? returnedBlog : blog)))
-      })
-      .catch(() => {
-        console.log('could not update likes')
-      })
+  const handleLikeUpdate = (blog) => {
+    updatedBlogMutation.mutate({ ...blog, likes: blog.likes + 1 })
   }
 
-  const handleBlogDelete = (id) => {
-    const blog = blogs.find((blog) => blog.id === id)
-    const ok = window.confirm(
-      `Do you want to remove blog ${blog.title} by ${blog.author}`
-    )
+  const deletedBlogMutation = useMutation({
+    mutationFn: blogService.eliminate,
+    onSuccess: () => {
+      queryClient.invalidateQueries('blogs')
+    }
+  })
+
+  const handleBlogDelete = (blog) => {
+    console.log('blog object', blog)
+    const ok = window.confirm(`Do you want to remove blog ${blog.title} by ${blog.author}`)
     if (ok) {
-      blogService
-        .eliminate(id)
-        .then(() => {
-          setBlogs(blogs.filter((blog) => blog.id !== id))
-        })
-        .catch(() => {
-          console.log(`${blog.title} was already deleted from the server`)
-          setBlogs(blogs.filter((blog) => blog.id !== id))
-        })
+      deletedBlogMutation.mutate(blog)
     }
   }
 
@@ -153,9 +143,7 @@ const App = () => {
         {!user && loginForm()}
         {user && (
           <div>
-            <div>
-              {result.isLoading && <div>loading data...</div>}
-            </div>
+            <div>{result.isLoading && <div>loading data...</div>}</div>
             <h2>blogs</h2>
             <Notification />
             {user && (
@@ -172,17 +160,18 @@ const App = () => {
             <Togglable buttonLabel="new blog" ref={blogFormRef}>
               <BlogForm createBlog={addBlog} />
             </Togglable>
-            {blogs && [...blogs]
-              .sort((a, b) => a.likes - b.likes)
-              .map((blog) => (
-                <Blog
-                  key={blog.id}
-                  blog={blog}
-                  handleLikeUpdate={handleLikeUpdate}
-                  handleBlogDelete={handleBlogDelete}
-                  currentUser={user}
-                />
-              ))}
+            {blogs &&
+              [...blogs]
+                .sort((a, b) => a.likes - b.likes)
+                .map((blog) => (
+                  <Blog
+                    key={blog.id}
+                    blog={blog}
+                    handleLikeUpdate={handleLikeUpdate}
+                    handleBlogDelete={handleBlogDelete}
+                    currentUser={user}
+                  />
+                ))}
           </div>
         )}
       </NotificationContext.Provider>

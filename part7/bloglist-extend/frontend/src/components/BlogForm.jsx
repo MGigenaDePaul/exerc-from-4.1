@@ -10,18 +10,18 @@ const BlogForm = ({ createBlog }) => {
   const [newAuthor, setNewAuthor] = useState('')
   const [newUrl, setNewUrl] = useState('')
 
-  const queryClient = useQueryClient() 
+  const queryClient = useQueryClient()
 
   const newBlogMutation = useMutation({
     mutationFn: blogService.create,
     onSuccess: () => {
       // invalidateQueries --> Refetch blogs so the newly created blog comes back with the populated user info
-      queryClient.invalidateQueries({queryKey:['blogs']})
+      queryClient.invalidateQueries({ queryKey: ['blogs'] })
     }
   })
 
   const addBlog = async (event) => {
-    event.preventDefault()    
+    event.preventDefault()
     newBlogMutation.mutate({
       title: newTitle,
       author: newAuthor,
@@ -29,8 +29,13 @@ const BlogForm = ({ createBlog }) => {
       likes: 0
     })
 
-    notificationDispatch({ type: 'CREATE_BLOG', payload: { title: newTitle, author: newAuthor } })
-    setTimeout(() => { notificationDispatch({ type: 'CLEAR' }) }, 5000)
+    notificationDispatch({
+      type: 'CREATE_BLOG',
+      payload: { title: newTitle, author: newAuthor }
+    })
+    setTimeout(() => {
+      notificationDispatch({ type: 'CLEAR' })
+    }, 5000)
 
     setNewTitle('')
     setNewAuthor('')
