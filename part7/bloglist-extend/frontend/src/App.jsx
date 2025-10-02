@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react'
-import { useReducer } from 'react'
 import { useQueryClient, useQuery, useMutation } from '@tanstack/react-query'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
@@ -10,24 +9,7 @@ import LoginForm from './components/LoginForm'
 import Togglable from './components/Togglable'
 import BlogForm from './components/BlogForm'
 
-import NotificationContext from './NotificationContext'
-
-const notificationReducer = (state, action) => {
-  switch (action.type) {
-    case 'CREATE_BLOG':
-      return `a new blog "${action.payload.title}" by ${action.payload.author} created`
-    case 'CLEAR':
-      return ''
-    case 'ERROR':
-      return 'Wrong credentials'
-    default:
-      return state
-  }
-}
-
-const App = () => {
-  const [notification, notificationDispatch] = useReducer(notificationReducer, '')
-
+const App = () => {  
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -137,9 +119,6 @@ const App = () => {
 
   return (
     <div>
-      <NotificationContext.Provider
-        value={[notification, notificationDispatch]}
-      >
         {!user && loginForm()}
         {user && (
           <div>
@@ -174,7 +153,6 @@ const App = () => {
                 ))}
           </div>
         )}
-      </NotificationContext.Provider>
     </div>
   )
 }
