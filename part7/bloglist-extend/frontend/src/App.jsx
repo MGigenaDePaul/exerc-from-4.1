@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useReducer, useContext } from 'react'
 import { useQueryClient, useQuery, useMutation } from '@tanstack/react-query'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
@@ -8,8 +8,22 @@ import './index.css'
 import LoginForm from './components/LoginForm'
 import Togglable from './components/Togglable'
 import BlogForm from './components/BlogForm'
+import LoginContext from './LoginContext'
+
+const loginReducer = (state, action) => {
+  switch(action.type){
+    case 'LOGIN':
+      return action.payload
+    case 'LOGOUT':
+      return null 
+    default:
+      return state
+  }
+}
 
 const App = () => {  
+  // const [login, loginDispatch] = useContext(LoginContext)
+
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -35,13 +49,6 @@ const App = () => {
       blogService.setToken(user.token)
     }
   }, [])
-
-  const addBlog = (blogObject) => {
-    blogFormRef.current.toggleVisibility()
-    blogService.create(blogObject).then((createdBlog) => {
-      setBlogs(blogs.concat(createdBlog))
-    })
-  }
 
   const updatedBlogMutation = useMutation({
     mutationFn: blogService.update,
@@ -103,15 +110,15 @@ const App = () => {
     if (user === null) {
       return (
         <div>
-          <Togglable buttonLabel="login">
-            <LoginForm
-              username={username}
-              password={password}
-              handleUsernameChange={({ target }) => setUsername(target.value)}
-              handlePasswordChange={({ target }) => setPassword(target.value)}
-              handleSubmit={handleLogin}
-            />
-          </Togglable>
+            <Togglable buttonLabel="login">
+                <LoginForm
+                  username={username}
+                  password={password}
+                  handleUsernameChange={({ target }) => setUsername(target.value)}
+                  handlePasswordChange={({ target }) => setPassword(target.value)}
+                  handleSubmit={handleLogin}
+                />
+            </Togglable>
         </div>
       )
     }
@@ -119,40 +126,38 @@ const App = () => {
 
   return (
     <div>
-        {!user && loginForm()}
-        {user && (
-          <div>
-            <div>{result.isLoading && <div>loading data...</div>}</div>
-            <h2>blogs</h2>
-            <Notification />
-            {user && (
-              <div>
-                <p style={{ display: 'inline-flex' }}>{user.name} logged in</p>
-                <button
-                  style={{ display: 'inline-flex' }}
-                  onClick={() => handleLogOut()}
-                >
-                  logout
-                </button>
-              </div>
-            )}
-            <Togglable buttonLabel="new blog" ref={blogFormRef}>
-              <BlogForm createBlog={addBlog} />
-            </Togglable>
-            {blogs &&
-              [...blogs]
-                .sort((a, b) => a.likes - b.likes)
-                .map((blog) => (
-                  <Blog
-                    key={blog.id}
-                    blog={blog}
-                    handleLikeUpdate={handleLikeUpdate}
-                    handleBlogDelete={handleBlogDelete}
-                    currentUser={user}
-                  />
-                ))}
-          </div>
-        )}
+      {/* <LoginContext.Provider value={[login, loginDispatch]}> */}
+          {!user && loginForm()}
+          {user && (
+            <div>
+              <h2>blogs</h2>
+              <Notification />
+              {user && (
+                <div>
+                  <p style={{ display: 'inline-flex' }}>{user.name} logged in</p>
+                  <button style={{ display: 'inline-flex' }} onClick={() => handleLogOut()}>
+                    logout
+                  </button>
+                </div>
+              )}
+              <Togglable buttonLabel="new blog" ref={blogFormRef}>
+                <BlogForm />
+              </Togglable>
+              {blogs &&
+                [...blogs]
+                  .sort((a, b) => a.likes - b.likes)
+                  .map((blog) => (
+                    <Blog
+                      key={blog.id}
+                      blog={blog}
+                      handleLikeUpdate={handleLikeUpdate}
+                      handleBlogDelete={handleBlogDelete}
+                      currentUser={user}
+                    />
+                  ))}
+            </div>
+          )}
+      {/* </LoginContext.Provider> */}
     </div>
   )
 }
