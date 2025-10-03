@@ -9,24 +9,15 @@ import LoginForm from './components/LoginForm'
 import Togglable from './components/Togglable'
 import BlogForm from './components/BlogForm'
 import LoginContext from './LoginContext'
+import NotificationContext from './NotificationContext'
 
-const loginReducer = (state, action) => {
-  switch(action.type){
-    case 'LOGIN':
-      return action.payload
-    case 'LOGOUT':
-      return null 
-    default:
-      return state
-  }
-}
-
-const App = () => {  
-  // const [login, loginDispatch] = useContext(LoginContext)
+const App = () => { 
+  const [notification, notificationDispatch] = useContext(NotificationContext)
+  const [login, loginDispatch] = useContext(LoginContext)
+  const [user] = useContext(LoginContext)
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
 
   const blogFormRef = useRef()
   const queryClient = useQueryClient()
@@ -45,7 +36,7 @@ const App = () => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
-      setUser(user)
+      loginDispatch({type: 'LOGIN', payload: user})
       blogService.setToken(user.token)
     }
   }, [])
@@ -80,10 +71,10 @@ const App = () => {
     event.preventDefault()
     try {
       const user = await loginService.login({ username, password })
-
+      console.log('usuario', user)
       window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
       blogService.setToken(user.token)
-      setUser(user)
+      loginDispatch({type: 'LOGIN', payload: user})
       setUsername('')
       setPassword('')
     } catch {
@@ -98,7 +89,7 @@ const App = () => {
     try {
       window.localStorage.removeItem('loggedBlogappUser')
       blogService.setToken(null)
-      setUser(null)
+      loginDispatch({type:'LOGOUT'})
       setUsername('')
       setPassword('')
     } catch {
@@ -126,7 +117,6 @@ const App = () => {
 
   return (
     <div>
-      {/* <LoginContext.Provider value={[login, loginDispatch]}> */}
           {!user && loginForm()}
           {user && (
             <div>
@@ -157,7 +147,6 @@ const App = () => {
                   ))}
             </div>
           )}
-      {/* </LoginContext.Provider> */}
     </div>
   )
 }
