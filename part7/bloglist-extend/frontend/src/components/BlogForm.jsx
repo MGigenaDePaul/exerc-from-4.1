@@ -1,10 +1,10 @@
 import { useContext, useState } from 'react'
-import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
+import { useQueryClient, useMutation } from '@tanstack/react-query'
 import NotificationContext from '../NotificationContext'
 import blogService from '../services/blogs'
 
-const BlogForm = ({ createBlog }) => {
-  const [notification, notificationDispatch] = useContext(NotificationContext)
+const BlogForm = () => {
+  const [notificationDispatch] = useContext(NotificationContext)
 
   const [newTitle, setNewTitle] = useState('')
   const [newAuthor, setNewAuthor] = useState('')

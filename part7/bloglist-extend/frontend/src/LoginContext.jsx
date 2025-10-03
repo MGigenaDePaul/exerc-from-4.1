@@ -1,7 +1,7 @@
 import { createContext, useReducer } from 'react'
 
 const loginReducer = (state, action) => {
-  switch(action.type){
+  switch (action.type) {
   case 'LOGIN':
     return action.payload
   case 'LOGOUT':

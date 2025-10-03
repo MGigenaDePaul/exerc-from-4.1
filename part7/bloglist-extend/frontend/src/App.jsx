@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useReducer, useContext } from 'react'
 import { useQueryClient, useQuery, useMutation } from '@tanstack/react-query'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
+import userService from './services/users'
 import Notification from './components/Notification'
 import loginService from './services/login'
 import './index.css'
@@ -10,6 +11,59 @@ import Togglable from './components/Togglable'
 import BlogForm from './components/BlogForm'
 import LoginContext from './LoginContext'
 import NotificationContext from './NotificationContext'
+import {
+  BrowserRouter as Router,
+  Routes, Route, Link, NavLink,
+  useMatch
+} from 'react-router-dom'
+
+
+const User = ({users}) => {
+  if (!users) return null
+  
+  const match = useMatch('/users/:id')
+  const user = match 
+    ? users.find(u => u.id === match.params.id)
+    : null
+
+  if (!user){
+    return null
+  }
+
+  return (
+    <div>
+      <h2>{user.name} {user.username}</h2>
+      <h3>added blogs</h3>
+      {user && (
+        user.blogs.map(blog => 
+          <ul key={blog.id}>
+            <li>{blog.title}</li>
+          </ul>
+      ))}
+    </div>
+  )
+}
+
+const Users = ({users}) => {
+  return (
+    <div>
+      <div className='row-header'>
+        <h2>Users</h2>
+        <div className='blogs-created-heading'>blogs created</div>
+      </div>
+      <div>
+          {users && (
+            [...users].map(u => 
+              <div className='users-info-container' key={u.id}>
+                <Link to={`/users/${u.id}`}>{u.name} {u.username}</Link>
+                <div>{u.blogs.length}</div>
+              </div>
+            )
+          )}
+      </div>
+    </div>
+  )
+}
 
 const App = () => { 
   const [notification, notificationDispatch] = useContext(NotificationContext)
@@ -22,6 +76,18 @@ const App = () => {
   const blogFormRef = useRef()
   const queryClient = useQueryClient()
 
+  //  fetch users
+   const resultUsers = useQuery({
+    queryKey:['users'],
+    queryFn: userService.getAll,
+    retry: 1,
+    refetchOnWindowFocus: false
+  })
+
+  const users = resultUsers.data
+
+  console.log('watch users', users)
+  // fetch Blogs
   const result = useQuery({
     queryKey: ['blogs'],
     queryFn: blogService.getAll,
@@ -71,7 +137,6 @@ const App = () => {
     event.preventDefault()
     try {
       const user = await loginService.login({ username, password })
-      console.log('usuario', user)
       window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
       blogService.setToken(user.token)
       loginDispatch({type: 'LOGIN', payload: user})
@@ -124,13 +189,25 @@ const App = () => {
               <Notification />
               {user && (
                 <div>
-                  <p style={{ display: 'inline-flex' }}>{user.name} logged in</p>
-                  <button style={{ display: 'inline-flex' }} onClick={() => handleLogOut()}>
+                  <p>{user.name} logged in</p>
+                  <button onClick={() => handleLogOut()}>
                     logout
                   </button>
                 </div>
               )}
-              <Togglable buttonLabel="new blog" ref={blogFormRef}>
+
+              <NavLink to="/users" style={({ isActive }) => ({
+                display: isActive ? 'none' : 'inline'
+              })}>
+                users
+              </NavLink>
+
+              <Routes>
+                <Route path="/users" element={<Users users={users}/>}/>
+                <Route path="/users/:id" element={<User users={users}/>}/>
+              </Routes>
+
+              {/* <Togglable buttonLabel="new blog" ref={blogFormRef}>
                 <BlogForm />
               </Togglable>
               {blogs &&
@@ -144,7 +221,7 @@ const App = () => {
                       handleBlogDelete={handleBlogDelete}
                       currentUser={user}
                     />
-                  ))}
+                  ))} */}
             </div>
           )}
     </div>

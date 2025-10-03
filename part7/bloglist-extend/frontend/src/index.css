@@ -14,3 +14,23 @@
 .success {
   color: green;
 }
+
+.users-header{
+  font-size: 25px;
+  font-weight: bold;
+}
+
+.blogs-created-heading{
+  font-size: 17px;
+  font-weight: bold;
+  margin-left: 145px;
+  text-align: center;
+  max-width: 100px;
+}
+
+.users-info-container{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  max-width: 300px;
+}
+

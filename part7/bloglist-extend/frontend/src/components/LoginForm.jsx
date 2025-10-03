@@ -7,7 +7,6 @@ const LoginForm = ({
   username,
   password
 }) => {
-
   return (
     <div>
       <h2>Log in to application</h2>
