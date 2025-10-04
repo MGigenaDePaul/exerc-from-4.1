@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useReducer, useContext } from 'react'
 import { useQueryClient, useQuery, useMutation } from '@tanstack/react-query'
-import Blog from './components/Blog'
+// import Blog from './components/Blog'
 import blogService from './services/blogs'
 import userService from './services/users'
 import Notification from './components/Notification'
@@ -19,9 +19,7 @@ const User = ({ users }) => {
   const match = useMatch('/users/:id')
   const user = match ? users.find((u) => u.id === match.params.id) : null
 
-  if (!user) {
-    return null
-  }
+  if (!user) return null
 
   return (
     <div>
@@ -38,6 +36,7 @@ const User = ({ users }) => {
     </div>
   )
 }
+
 
 const Users = ({ users }) => {
   return (
@@ -61,8 +60,25 @@ const Users = ({ users }) => {
   )
 }
 
+const Blog = ({ blogs, handleLikeUpdate }) => {
+  if (!blogs) return null
 
-const BlogList = ({ handleLikeUpdate, handleBlogDelete, user, blogs }) => {
+  const match = useMatch('/blogs/:id')
+  const blog = match ? blogs.find((b) => b.id === match.params.id) : null
+
+  if (!blog) return null
+
+  return (
+    <div>
+      <h2>{blog.title}</h2>
+      <a href={blog.url}>{blog.url}</a>
+      <p>{blog.likes} likes <button onClick={() => handleLikeUpdate(blog)}>like</button></p>
+      <p>added by {blog.author} </p>
+    </div>
+  )
+}
+
+const BlogList = ({ blogs }) => {
   const blogFormRef = useRef()
   return (
     <div>
@@ -74,12 +90,9 @@ const BlogList = ({ handleLikeUpdate, handleBlogDelete, user, blogs }) => {
             .sort((a, b) => a.likes - b.likes)
             .map((blog) => (
               <Link key={blog.id} to={`/blogs/${blog.id}`}>
-                <Blog
-                  blog={blog}
-                  handleLikeUpdate={handleLikeUpdate}
-                  handleBlogDelete={handleBlogDelete}
-                  currentUser={user}
-                />
+                <div>
+                  {blog.title} {blog.author}
+                </div>
               </Link>
             ))}
     </div>
@@ -235,10 +248,9 @@ const App = () => {
             <Route path="/users" element={<Users users={users} />} />
             <Route path="/users/:id" element={<User users={users} />} />
             <Route path="/blogs" element={
-              <BlogList blogs={blogs} handleLikeUpdate={handleLikeUpdate}
-                handleBlogDelete={handleBlogDelete} />}
+              <BlogList blogs={blogs} />}
             />
-            <Route path="/blogs/:id" element={<BlogList blogs={blogs} handleLikeUpdate={handleLikeUpdate} handleBlogDelete={handleBlogDelete}/>} />
+            <Route path="/blogs/:id" element={<Blog blogs={blogs} handleLikeUpdate={handleLikeUpdate} />} />
           </Routes>
         </div>
       )}
