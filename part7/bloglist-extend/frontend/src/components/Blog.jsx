@@ -11,6 +11,9 @@ const Blog = ({ currentUser, blog, handleLikeUpdate, handleBlogDelete }) => {
     marginBottom: 5
   }
 
+  console.log('is there a blog?', blog)
+  if (!blog) return null
+
   return (
     <div className="blog" style={blogStyle}>
       <div>

@@ -2,14 +2,14 @@ import { createContext, useReducer } from 'react'
 
 const notificationReducer = (state, action) => {
   switch (action.type) {
-    case 'CREATE_BLOG':
-      return `a new blog "${action.payload.title}" by ${action.payload.author} created`
-    case 'CLEAR':
-      return ''
-    case 'ERROR':
-      return 'Wrong credentials'
-    default:
-      return state
+  case 'CREATE_BLOG':
+    return `a new blog "${action.payload.title}" by ${action.payload.author} created`
+  case 'CLEAR':
+    return ''
+  case 'ERROR':
+    return 'Wrong credentials'
+  default:
+    return state
   }
 }
 

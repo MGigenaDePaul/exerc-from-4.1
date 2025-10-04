@@ -4,7 +4,7 @@ import NotificationContext from '../NotificationContext'
 import blogService from '../services/blogs'
 
 const BlogForm = () => {
-  const [notificationDispatch] = useContext(NotificationContext)
+  const [notification, notificationDispatch] = useContext(NotificationContext)
 
   const [newTitle, setNewTitle] = useState('')
   const [newAuthor, setNewAuthor] = useState('')

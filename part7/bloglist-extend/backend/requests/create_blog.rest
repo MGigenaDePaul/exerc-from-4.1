@@ -1,10 +1,10 @@
 POST http://localhost:3003/api/blogs
 Content-Type: application/json 
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkxvcGV6IiwiaWQiOiI2OGE2MmJlODM5NmExNTIwMDBiODA4MTEiLCJpYXQiOjE3NTU3MjEwOTgsImV4cCI6MTc1NTcyNDY5OH0.CcJ67-xUmPCGB2L1EFU2VKXsXdJxdl6StzHTWdFPFC4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlF1ZXJvbCIsImlkIjoiNjhlMDczMzg3ZmY5ODdiNTc2MDZiOWM5IiwiaWF0IjoxNzU5NTQwNDI0LCJleHAiOjE3NTk1NDQwMjR9.wvYYIcsYpC_dsf2bn5Mt-Hams7pyZgY9NQEqu_Q3KRs
 
 {
-        "title": "Top 50 Food Blogs & Bloggers",
-        "author": "Tracy",
-        "url": "https://industryeats.com/top-50-food-blogs/",
-        "likes": 43
+        "title": "Benjamin and Joaco, a great friendship",
+        "author": "Miqueas",
+        "url": "https://inventedUrl.com",
+        "likes": 180
 }
