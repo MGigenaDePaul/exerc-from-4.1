@@ -78,7 +78,7 @@ const Blog = ({ blogs, handleLikeUpdate }) => {
   )
 }
 
-const BlogList = ({ blogs }) => {
+const Blogs = ({ blogs }) => {
   const blogFormRef = useRef()
   return (
     <div>
@@ -128,7 +128,6 @@ const App = () => {
     retry: 1,
     refetchOnWindowFocus: false
   })
-  console.log(JSON.parse(JSON.stringify(result)))
 
   const blogs = result.data
 
@@ -221,36 +220,27 @@ const App = () => {
       {!user && loginForm()}
       {user && (
         <div>
-          <h2>blogs</h2>
-          <Notification />
-          {user && (
-            <div>
-              <p>{user.name} logged in</p>
-              <button onClick={() => handleLogOut()}>logout</button>
+          <div className="menu-flexbox">
+            <Link to="/blogs">blogs</Link>
+            <Link to="/users">users</Link>
+            <div className="div-log">
+              {user && (
+                <div className="child-log">
+                  <p>{user.name} logged in</p>
+                  <button className="logout-button" onClick={() => handleLogOut()}>logout</button>
+                </div>
+              )}
             </div>
-          )}
+          </div>
 
-          <NavLink
-            to="/users"
-            style={({ isActive }) => ({
-              display: isActive ? 'none' : 'inline'
-            })}
-          >
-            users
-          </NavLink>
-          <NavLink to="/blogs" style={({ isActive }) => ({
-            display: isActive ? 'none' : 'inline'
-          })}>
-            blogs
-          </NavLink>
-
+          <h2>blogs app</h2>
+          <Notification />
           <Routes>
             <Route path="/users" element={<Users users={users} />} />
             <Route path="/users/:id" element={<User users={users} />} />
-            <Route path="/blogs" element={
-              <BlogList blogs={blogs} />}
-            />
+            <Route path="/blogs" element={<Blogs blogs={blogs} />} />
             <Route path="/blogs/:id" element={<Blog blogs={blogs} handleLikeUpdate={handleLikeUpdate} />} />
+            <Route path="/" element={<Blogs blogs={blogs} />}/>
           </Routes>
         </div>
       )}
