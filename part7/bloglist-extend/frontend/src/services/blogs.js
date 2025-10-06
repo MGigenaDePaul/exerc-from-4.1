@@ -39,7 +39,11 @@ const eliminate = async (blog) => {
 const comment = async (blog) => {
   const config = { headers: { Authorization: token } }
 
-  const response = await axios.post(`${baseUrl}/${blog.id}/comments`, { comment: blog.comment }, config)
+  const response = await axios.post(
+    `${baseUrl}/${blog.id}/comments`,
+    { comment: blog.comment },
+    config
+  )
   return response.data
 }
 

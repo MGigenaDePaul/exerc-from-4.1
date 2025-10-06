@@ -1,38 +1,47 @@
-const Blog = ({ currentUser, blog, handleLikeUpdate, handleBlogDelete }) => {
+import { Paper, TableContainer } from '@mui/material'
+import { useMatch } from 'react-router-dom'
 
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5
-  }
+const Blog = ({
+  blogs,
+  handleLikeUpdate,
+  newComment,
+  setNewComment,
+  handleComment
+}) => {
+  if (!blogs) return null
 
-  console.log('is there a blog?', blog)
+  const match = useMatch('/blogs/:id')
+  const blog = match ? blogs.find((b) => b.id === match.params.id) : null
+
   if (!blog) return null
 
   return (
-    <div className="blog" style={blogStyle}>
-      <div>
-        <div style={{ display: 'inline-flex' }}>
-          {blog.title} {blog.author}
-        </div>
-      </div>
-
-      <div>
-        <p style={{ margin: '4px 0' }}>{blog.url}</p>
-        <p style={{ margin: '4px 0' }}>
-          likes {blog.likes}{' '}
-          <button onClick={() => handleLikeUpdate(blog, blog.id)}>
-            like
-          </button>
+    <div>
+      <TableContainer className="table-comment-section" component={Paper}>
+        <h2>{blog.title}</h2>
+        <a href={blog.url}>{blog.url}</a>
+        <p>
+          {blog.likes} likes{' '}
+          <button className="like-button" onClick={() => handleLikeUpdate(blog)}>like</button>
         </p>
-        <p style={{ margin: '4px 0' }}>{blog.user.name}</p>
-
-        {currentUser && currentUser?.username === blog.user?.username && (
-          <button onClick={() => handleBlogDelete(blog)}>remove</button>
-        )}
-      </div>
+        <p>added by {blog.author}</p>
+        <h3>comments</h3>
+        <form
+          className="comment-form"
+          onSubmit={(event) => handleComment(blog, event)}
+        >
+          <input
+            value={newComment}
+            onChange={(event) => setNewComment(event.target.value)}
+          />
+          <button type="submit">add comment</button>
+        </form>
+        <ul>
+          {blog.comments.map((comment, index) => (
+            <li key={index}>{comment}</li>
+          ))}
+        </ul>
+      </TableContainer>
     </div>
   )
 }

@@ -1,31 +1,10 @@
-.message {
-  background: lightgrey;
-  font-size: 20px;
-  border-style: solid;
-  border-radius: 5px;
-  padding: 10px;
-  margin-bottom: 10px;
-}
-
-.error {
-  color: rgb(255, 0, 0);
-}
-
-.success {
-  color: green;
+body {
+  background-color:;
 }
 
 .users-header {
   font-size: 25px;
   font-weight: bold;
-}
-
-.blogs-created-heading {
-  font-size: 17px;
-  font-weight: bold;
-  margin-left: 145px;
-  text-align: center;
-  max-width: 100px;
 }
 
 .users-info-container {
@@ -34,27 +13,138 @@
   max-width: 300px;
 }
 
-.menu-flexbox{
+.menu-flexbox {
   display: flex;
   gap: 7px;
   align-items: center;
-  border: 2px solid black;
 }
 
-.div-log{
+.div-log {
   display: flex;
+  margin-left: 7px;
 }
 
-.div-log .child-log{
+.div-log .child-log {
   display: flex;
   align-items: center;
   gap: 8px;
-}  
-
-.logout-button{
-  width: 70px;
-  height: 30px; 
 }
 
+.logout-button {
+  width: 70px;
+  height: 30px;
+  background-color: rgb(123, 117, 117);
+}
 
+.logout-button:hover {
+  background-color: rgb(128, 126, 126);
+  cursor: pointer;
+}
 
+/*....................MENU..............................*/
+.menu-link {
+  color: rgba(14, 1, 87, 0.822);
+  font-weight: bold;
+}
+
+/*....................USERS....................*/
+/* .table-users{
+  border: 2px solid black;
+} */
+
+.row-header-users {
+  padding: 5px;
+}
+
+.blogs-created-heading {
+  font-size: 20px;
+  font-weight: bold;
+  text-align: end;
+  margin-right: 90px;
+}
+
+.users {
+  text-decoration: none;
+  font-size: 17px;
+}
+
+/*................Login Form....................*/
+.container-component {
+  display: grid;
+  max-width: 600px;
+  justify-content: center;
+  align-content: center;
+  margin: auto;
+  margin-top: 100px;
+  padding: 20px;
+} /*this class is used in the Togglable component that wraps the LoginForm.jsx component*/
+
+.login-heading {
+  text-align: center;
+  margin-bottom: -30px;
+  font-size: 30px;
+}
+
+.login-form {
+  display: grid;
+  padding-top: 50px;
+  max-height: 200px;
+  gap: 5px;
+}
+
+.login-button {
+  max-height: 50px;
+}
+
+.username-and-password-div {
+  display: grid;
+  padding: 10px;
+}
+
+.username-input {
+  width: 300px;
+  grid-gap: 10px;
+}
+
+.password-input {
+  width: 300px;
+}
+
+/*.............................BlogForm....................*/
+.container-component .create-button {
+  width: 250px;
+}
+
+.create-new-heading {
+  text-align: center;
+  font-size: 25px;
+}
+.blog-form {
+  display: grid;
+  padding: 10px;
+  grid-gap: 7px;
+}
+
+/*.........................COMMENT-SECTION......................*/
+.table-comment-section {
+  padding: 20px;
+}
+.comment-form {
+  padding: 10px;
+  display: flex;
+}
+
+.like-button{
+  width: 40px;
+  height: 25px;
+}
+
+.comment-form input {
+  width: 180px;
+  height: 20px;
+}
+
+.comment-form button {
+  width: 120px;
+  height: 26px;
+}

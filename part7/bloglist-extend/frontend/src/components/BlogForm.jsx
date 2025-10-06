@@ -2,6 +2,7 @@ import { useContext, useState } from 'react'
 import { useQueryClient, useMutation } from '@tanstack/react-query'
 import NotificationContext from '../NotificationContext'
 import blogService from '../services/blogs'
+import { TextField, Button } from '@mui/material'
 
 const BlogForm = () => {
   const [notification, notificationDispatch] = useContext(NotificationContext)
@@ -44,33 +45,40 @@ const BlogForm = () => {
 
   return (
     <div>
-      <h2>create new</h2>
+      <h2 className="create-new-heading">create new</h2>
       <form onSubmit={addBlog}>
-        title:{' '}
-        <input
-          type="text"
-          value={newTitle}
-          onChange={(event) => setNewTitle(event.target.value)}
-          placeholder="write title"
-        />
+        <div className="blog-form">
+          <TextField
+            label="title"
+            type="text"
+            value={newTitle}
+            onChange={(event) => setNewTitle(event.target.value)}
+            placeholder="write title"
+          />
+          <TextField
+            label="author"
+            type="text"
+            value={newAuthor}
+            onChange={(event) => setNewAuthor(event.target.value)}
+            placeholder="write author"
+          />
+          <TextField
+            label="url"
+            type="text"
+            value={newUrl}
+            onChange={(event) => setNewUrl(event.target.value)}
+            placeholder="write url"
+          />
+        </div>
         <br />
-        author:{' '}
-        <input
-          type="text"
-          value={newAuthor}
-          onChange={(event) => setNewAuthor(event.target.value)}
-          placeholder="write author"
-        />
-        <br />
-        url:{' '}
-        <input
-          type="text"
-          value={newUrl}
-          onChange={(event) => setNewUrl(event.target.value)}
-          placeholder="write url"
-        />
-        <br />
-        <button type="submit">create</button>
+        <Button
+          className="create-button"
+          variant="contained"
+          color="primary"
+          type="submit"
+        >
+          create
+        </Button>
       </form>
     </div>
   )

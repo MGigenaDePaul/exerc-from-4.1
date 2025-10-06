@@ -1,6 +1,5 @@
-import { useState, useEffect, useRef, useReducer, useContext } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import { useQueryClient, useQuery, useMutation } from '@tanstack/react-query'
-// import Blog from './components/Blog'
 import blogService from './services/blogs'
 import userService from './services/users'
 import Notification from './components/Notification'
@@ -8,105 +7,14 @@ import loginService from './services/login'
 import './index.css'
 import LoginForm from './components/LoginForm'
 import Togglable from './components/Togglable'
-import BlogForm from './components/BlogForm'
+import User from './components/User'
+import Users from './components/Users'
+import Blog from './components/Blog'
+import Blogs from './components/Blogs'
 import LoginContext from './LoginContext'
 import NotificationContext from './NotificationContext'
-import { Routes, Route, Link, NavLink, useMatch, useNavigate } from 'react-router-dom'
-
-const User = ({ users }) => {
-  if (!users) return null
-
-  const match = useMatch('/users/:id')
-  const user = match ? users.find((u) => u.id === match.params.id) : null
-
-  if (!user) return null
-
-  return (
-    <div>
-      <h2>
-        {user.name} {user.username}
-      </h2>
-      <h3>added blogs</h3>
-      {user &&
-        user.blogs.map((blog) => (
-          <ul key={blog.id}>
-            <li>{blog.title}</li>
-          </ul>
-        ))}
-    </div>
-  )
-}
-
-
-const Users = ({ users }) => {
-  return (
-    <div>
-      <div className="row-header">
-        <h2>Users</h2>
-        <div className="blogs-created-heading">blogs created</div>
-      </div>
-      <div>
-        {users &&
-          [...users].map((u) => (
-            <div className="users-info-container" key={u.id}>
-              <Link to={`/users/${u.id}`}>
-                {u.name} {u.username}
-              </Link>
-              <div>{u.blogs.length}</div>
-            </div>
-          ))}
-      </div>
-    </div>
-  )
-}
-
-const Blog = ({ blogs, handleLikeUpdate, newComment, setNewComment, handleComment }) => {
-  if (!blogs) return null
-
-  const match = useMatch('/blogs/:id')
-  const blog = match ? blogs.find((b) => b.id === match.params.id) : null
-
-  if (!blog) return null
-
-  return (
-    <div>
-      <h2>{blog.title}</h2>
-      <a href={blog.url}>{blog.url}</a>
-      <p>{blog.likes} likes <button onClick={() => handleLikeUpdate(blog)}>like</button></p>
-      <p>added by {blog.author}</p>
-      <h3>comments</h3>
-      <form onSubmit={(event) => handleComment(blog, event)}>
-        <input value={newComment} onChange={(event) => setNewComment(event.target.value)}/>
-        <button type="submit">add comment</button>
-      </form>
-      <ul>
-        {blog.comments.map((comment, index) =>
-          <li key={index}>{comment}</li>)}
-      </ul>
-    </div>
-  )
-}
-
-const Blogs = ({ blogs }) => {
-  const blogFormRef = useRef()
-  return (
-    <div>
-      <Togglable buttonLabel="new blog" ref={blogFormRef}>
-        <BlogForm />
-      </Togglable>
-      {blogs &&
-          [...blogs]
-            .sort((a, b) => a.likes - b.likes)
-            .map((blog) => (
-              <Link key={blog.id} to={`/blogs/${blog.id}`}>
-                <div>
-                  {blog.title} {blog.author}
-                </div>
-              </Link>
-            ))}
-    </div>
-  )
-}
+import { Routes, Route, Link, useNavigate } from 'react-router-dom'
+import { Container, AppBar, Button, Toolbar, Alert } from '@mui/material'
 
 const App = () => {
   const [notification, notificationDispatch] = useContext(NotificationContext)
@@ -226,42 +134,66 @@ const App = () => {
   }
 
   return (
-    <div>
+    <Container>
       {!user && loginForm()}
       {user && (
         <div>
-          <div className="menu-flexbox">
-            <Link to="/blogs">blogs</Link>
-            <Link to="/users">users</Link>
-            <div className="div-log">
-              {user && (
-                <div className="child-log">
-                  <p>{user.name} logged in</p>
-                  <button className="logout-button" onClick={() => handleLogOut()}>logout</button>
-                </div>
-              )}
-            </div>
-          </div>
+          <AppBar position="static">
+            <Toolbar>
+              <Button color="inherit">
+                <Link className="menu-link" to="/blogs">
+                  blogs
+                </Link>
+              </Button>
+              <Button color="inherit">
+                <Link className="menu-link" to="/users">
+                  users
+                </Link>
+              </Button>
+              <div className="div-log">
+                {user && (
+                  <div className="child-log">
+                    <Alert
+                      className="logged-in-notification"
+                      severity="success"
+                    >
+                      {user.name} logged in
+                    </Alert>
+                    <button
+                      className="logout-button"
+                      onClick={() => handleLogOut()}
+                    >
+                      logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            </Toolbar>
+          </AppBar>
 
           <h2>blogs app</h2>
           <Notification />
           <Routes>
-            <Route path="/" element={<Blogs blogs={blogs} />}/>
+            <Route path="/" element={<Blogs blogs={blogs} />} />
             <Route path="/users" element={<Users users={users} />} />
             <Route path="/users/:id" element={<User users={users} />} />
             <Route path="/blogs" element={<Blogs blogs={blogs} />} />
-            <Route path="/blogs/:id"
-              element={<Blog blogs={blogs}
-                handleLikeUpdate={handleLikeUpdate}
-                newComment={newComment}
-                setNewComment={setNewComment}
-                handleComment={handleComment}
-              />}
+            <Route
+              path="/blogs/:id"
+              element={
+                <Blog
+                  blogs={blogs}
+                  handleLikeUpdate={handleLikeUpdate}
+                  newComment={newComment}
+                  setNewComment={setNewComment}
+                  handleComment={handleComment}
+                />
+              }
             />
           </Routes>
         </div>
       )}
-    </div>
+    </Container>
   )
 }
 
