@@ -11,7 +11,7 @@ import Togglable from './components/Togglable'
 import BlogForm from './components/BlogForm'
 import LoginContext from './LoginContext'
 import NotificationContext from './NotificationContext'
-import { Routes, Route, Link, NavLink, useMatch } from 'react-router-dom'
+import { Routes, Route, Link, NavLink, useMatch, useNavigate } from 'react-router-dom'
 
 const User = ({ users }) => {
   if (!users) return null
@@ -60,7 +60,7 @@ const Users = ({ users }) => {
   )
 }
 
-const Blog = ({ blogs, handleLikeUpdate }) => {
+const Blog = ({ blogs, handleLikeUpdate, newComment, setNewComment, handleComment }) => {
   if (!blogs) return null
 
   const match = useMatch('/blogs/:id')
@@ -73,7 +73,16 @@ const Blog = ({ blogs, handleLikeUpdate }) => {
       <h2>{blog.title}</h2>
       <a href={blog.url}>{blog.url}</a>
       <p>{blog.likes} likes <button onClick={() => handleLikeUpdate(blog)}>like</button></p>
-      <p>added by {blog.author} </p>
+      <p>added by {blog.author}</p>
+      <h3>comments</h3>
+      <form onSubmit={(event) => handleComment(blog, event)}>
+        <input value={newComment} onChange={(event) => setNewComment(event.target.value)}/>
+        <button type="submit">add comment</button>
+      </form>
+      <ul>
+        {blog.comments.map((comment, index) =>
+          <li key={index}>{comment}</li>)}
+      </ul>
     </div>
   )
 }
@@ -106,6 +115,9 @@ const App = () => {
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [newComment, setNewComment] = useState('')
+
+  const navigate = useNavigate()
 
   const queryClient = useQueryClient()
 
@@ -151,21 +163,17 @@ const App = () => {
     updatedBlogMutation.mutate({ ...blog, likes: blog.likes + 1 })
   }
 
-  const deletedBlogMutation = useMutation({
-    mutationFn: blogService.eliminate,
+  const newCommentMutation = useMutation({
+    mutationFn: blogService.comment,
     onSuccess: () => {
-      queryClient.invalidateQueries('blogs')
+      queryClient.invalidateQueries({ queryKey: ['blogs'] })
     }
   })
 
-  const handleBlogDelete = (blog) => {
-    console.log('blog object', blog)
-    const ok = window.confirm(
-      `Do you want to remove blog ${blog.title} by ${blog.author}`
-    )
-    if (ok) {
-      deletedBlogMutation.mutate(blog)
-    }
+  const handleComment = (blog, event) => {
+    event.preventDefault()
+    newCommentMutation.mutate({ ...blog, comment: newComment })
+    setNewComment('')
   }
 
   const handleLogin = async (event) => {
@@ -192,6 +200,8 @@ const App = () => {
       loginDispatch({ type: 'LOGOUT' })
       setUsername('')
       setPassword('')
+
+      navigate('/')
     } catch {
       console.log('failed logging out')
     }
@@ -236,11 +246,18 @@ const App = () => {
           <h2>blogs app</h2>
           <Notification />
           <Routes>
+            <Route path="/" element={<Blogs blogs={blogs} />}/>
             <Route path="/users" element={<Users users={users} />} />
             <Route path="/users/:id" element={<User users={users} />} />
             <Route path="/blogs" element={<Blogs blogs={blogs} />} />
-            <Route path="/blogs/:id" element={<Blog blogs={blogs} handleLikeUpdate={handleLikeUpdate} />} />
-            <Route path="/" element={<Blogs blogs={blogs} />}/>
+            <Route path="/blogs/:id"
+              element={<Blog blogs={blogs}
+                handleLikeUpdate={handleLikeUpdate}
+                newComment={newComment}
+                setNewComment={setNewComment}
+                handleComment={handleComment}
+              />}
+            />
           </Routes>
         </div>
       )}

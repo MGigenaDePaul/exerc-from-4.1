@@ -13,18 +13,13 @@ const getAll = () => {
 }
 
 const create = async (newObject) => {
-  const config = {
-    headers: { Authorization: token }
-  }
-
+  const config = { headers: { Authorization: token } }
   const response = await axios.post(baseUrl, newObject, config)
   return response.data
 }
 
 const update = async (newObject) => {
-  const config = {
-    headers: { Authorization: token }
-  }
+  const config = { headers: { Authorization: token } }
 
   const response = await axios.put(
     `${baseUrl}/${newObject.id}`,
@@ -35,12 +30,16 @@ const update = async (newObject) => {
 }
 
 const eliminate = async (blog) => {
-  console.log('blog to eliminate', blog)
-  const config = {
-    headers: { Authorization: token }
-  }
+  const config = { headers: { Authorization: token } }
 
   const response = await axios.delete(`${baseUrl}/${blog.id}`, config)
+  return response.data
+}
+
+const comment = async (blog) => {
+  const config = { headers: { Authorization: token } }
+
+  const response = await axios.post(`${baseUrl}/${blog.id}/comments`, { comment: blog.comment }, config)
   return response.data
 }
 
@@ -49,5 +48,6 @@ export default {
   getAll,
   create,
   update,
-  eliminate
+  eliminate,
+  comment
 }
